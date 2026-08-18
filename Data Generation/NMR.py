@@ -9,11 +9,11 @@ from dataclasses import dataclass
 @dataclass
 class NMRPlotParameters:
     """data class for lorentzian plot parameters"""
-    points : int
-    half_width : float
-    shift_range : list  
-    reference_shift : float
-    tolerance : float 
+    points : int                # number of points on the curve
+    half_width : float          # half-width of the Lorentzian peak
+    shift_range : list          # absolute chemical shift range [ppm]  
+    reference_shift : float     # reference chemical shift [ppm]
+    tolerance : float = 0.0     # tolerance for peak consolidation 
 
 class NMR:
     """Class to generate the NMR spectrum of a copolymer chain.

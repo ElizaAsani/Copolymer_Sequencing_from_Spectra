@@ -8,25 +8,25 @@ from dataclasses import dataclass
 from enum import Enum
 
 @dataclass
-class MassSpecParameters:
+class MSParameters:
     """data class for mass spectrum parameters"""
-    monomers : list
-    formulas : list
-    s : float = 6.0
+    monomers : list         # list of monomers + endgroup ('*')
+    formulas : list         # chemical formulas of all monomers and endgroup
+    s : float = 6.0         # width of Gaussian distribution of intensities over breaking points
 
 @dataclass
 class BarPlotParameters:
     """data class for bar plot parameters"""
-    massRange : list
-    binWidth : int
+    mass_range : list        # range of mass spectrometer [m/z]
+    bin_width : int          # width of bins used to histogram spectrum [m/z] 
 
 @dataclass
 class MSNoiseParameters:
   """data class for mass spectrum noise parameters"""
-  dropout : float = 0
-  extra_peaks : int = 0
-  width : float = 1.0
-  weight : float = 1.0
+  dropout : float = 0.0     # dropout probability for each peak
+  extra_peaks : int = 0     # number of satellite peaks to generate around each peak
+  width : float = 182.0     # width of linear intensity decay for satellite peak relative to major peak [m/z]
+  weight : float = 1.0      # lower bound for reweighting each peak
 
 @dataclass
 class Atom:
@@ -51,7 +51,7 @@ class MS:
     """Class to generate the mass spectrum of a copolymer chain.
     """
 
-    def __init__(self, MS_parameters : MassSpecParameters, bar_plot_params : BarPlotParameters, noise_params : MSNoiseParameters):
+    def __init__(self, MS_parameters : MSParameters, bar_plot_params : BarPlotParameters, noise_params : MSNoiseParameters):
         self.rngs = {'dropout': np.random.default_rng(12),
                     'extra_peaks': np.random.default_rng(24), 
                     'reweighting': np.random.default_rng(48)}
@@ -76,9 +76,9 @@ class MS:
         self.noise_width = noise_params.width
         self.peak_weight = noise_params.weight
 
-        self.massRange = bar_plot_params.massRange
-        self.binWidth = bar_plot_params.binWidth
-        self.x = np.arange(self.massRange[0], self.massRange[1], self.binWidth)
+        self.mass_range = bar_plot_params.mass_range
+        self.bin_width = bar_plot_params.bin_width
+        self.x = np.arange(self.mass_range[0], self.mass_range[1], self.bin_width)
 
     def getSpectrum(self, seq):
         """Generates the binned mass spectrum for a given copolymer sequence.
@@ -88,11 +88,11 @@ class MS:
         # bin the mass spectrum
         intensities = np.zeros_like(self.x, dtype=float)
         for m, inten in mass_spectrum.items():
-            if self.massRange[0] <= m < self.massRange[1]:
-                bin_index = int((m - self.massRange[0]) / self.binWidth)
+            if self.mass_range[0] <= m < self.mass_range[1]:
+                bin_index = int((m - self.mass_range[0]) / self.bin_width)
                 intensities[bin_index] += inten
             else:
-                print(f"Mass {m} out of range {self.massRange}, skipping.")
+                print(f"Mass {m} out of range {self.mass_range}, skipping.")
 
         # normalize to max intensity
         intensities = intensities / max(intensities)
@@ -166,7 +166,7 @@ class MS:
               extra_form_masses = {k: Element[k].value.mass*extra_formulas[k] for k in extra_formulas}
               extra_masses = mass - np.add.reduce(list(extra_form_masses.values()))
               # ensure new masses are in range
-              extra_masses = np.array([extra_mass for extra_mass in extra_masses if (extra_mass >= self.massRange[0] and extra_mass <= self.massRange[1])])
+              extra_masses = np.array([extra_mass for extra_mass in extra_masses if (extra_mass >= self.mass_range[0] and extra_mass <= self.mass_range[1])])
               # get new intensity as fraction of major peak intensity
               extra_intensities = ((mass - extra_masses)/self.noise_width)*intensity
               extra_fragments.update(dict(zip(extra_masses, extra_intensities)))

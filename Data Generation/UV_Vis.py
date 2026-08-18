@@ -10,24 +10,24 @@ from dataclasses import dataclass
 class FrenkelParameters:
     """data class for Frenkel parameters"""
     monomers : list
-    eps : list
-    mu : list
-    J_DD : float
-    J_SE : float
+    eps : list                      # excited state energy for each monomer [eV]
+    mu : list                       # transition dipole moment for each monomer [D]
+    J_DD : float                    # through-space dipole-dipole coupling constant [eV/D^2]
+    J_SE : float                    # nearest-neighbor superexchange coupling constant [eV]
 
 @dataclass
 class GaussianPlotParameters:
     """data class for gaussian plot parameters"""
-    points : int
-    std_dev : float
-    energyRange : list=None
-    wavelengthRange : list=None
-    peaks : int=None
+    points : int                    # number of points on the curve
+    std_dev : float                 # standard deviation of Gaussian peak
+    energy_range : list=None         # energy range of UV-Vis spectrophotometer
+    wavelength_range : list=None     # wavelength range of UV-Vis spectrophotometer
+    peaks : int=None                # number of highest-intensity peaks to retain
 
 #----Dipole-Dipole Coupling Parameters-----#
 
-R = 5 * 10**-10             # distance between monomers [m] (5 A)
-eps_r = 1.0                 # relative permittivity (1.0)
+R = 5 * 10**-10                     # distance between monomers [m] (5 A)
+eps_r = 1.0                         # relative permittivity (1.0)
 
 class UV_Vis:
     """Class to generate the UV-Vis spectrum of a copolymer chain using the Frenkel Hamiltonian model.
@@ -55,17 +55,17 @@ class UV_Vis:
         self.points = plot_parameters.points
         self.peaks = plot_parameters.peaks
         self.std_dev = plot_parameters.std_dev                
-        self.energyRange = plot_parameters.energyRange
-        self.wavelengthRange = plot_parameters.wavelengthRange
+        self.energy_range = plot_parameters.energy_range
+        self.wavelength_range = plot_parameters.wavelength_range
         
-        if self.energyRange is not None:
+        if self.energy_range is not None:
             self.unit = 'energy'
-            self.x = np.linspace(self.energyRange[0], self.energyRange[1], self.points)
+            self.x = np.linspace(self.energy_range[0], self.energy_range[1], self.points)
             self.x_energy = self.x
-        elif self.wavelengthRange is not None:
+        elif self.wavelength_range is not None:
             self.unit = 'wavelength'
-            self.energyRange = [UV_Vis.ev_to_nm(self.wavelengthRange[1]), UV_Vis.ev_to_nm(self.wavelengthRange[0])]
-            self.x = np.linspace(self.wavelengthRange[0], self.wavelengthRange[1], self.points)
+            self.energy_range = [UV_Vis.ev_to_nm(self.wavelength_range[1]), UV_Vis.ev_to_nm(self.wavelength_range[0])]
+            self.x = np.linspace(self.wavelength_range[0], self.wavelength_range[1], self.points)
             self.x_energy = UV_Vis.ev_to_nm(self.x)
         else:
             raise TypeError("Must specify either energy range or wavelength range for the spectrum.")
@@ -167,7 +167,7 @@ class UV_Vis:
         absorption = self._generateAbsorption(eigenvalues, eigenvectors, sequence)
 
         # cutoff absorption outside of range
-        absorption = absorption[(absorption['energy'] >= self.energyRange[0]) & (absorption['energy'] <= self.energyRange[1])]
+        absorption = absorption[(absorption['energy'] >= self.energy_range[0]) & (absorption['energy'] <= self.energy_range[1])]
 
         # add wavelength 
         absorption['wavelength'] = UV_Vis.ev_to_nm(absorption['energy'])
