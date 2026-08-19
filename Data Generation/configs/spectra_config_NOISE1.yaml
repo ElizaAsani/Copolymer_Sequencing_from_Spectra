@@ -1,0 +1,65 @@
+# ========================================================
+# Copolymer Spectral Simulation - Configuration
+# ========================================================
+
+simulate:
+  uv_vis: true
+  nmr: true
+  ms: true
+
+io: 
+  sequence_file: seq_3-20.csv       # file with sequences and lambdas
+  output_file: multispectra_NOISE1.h5
+
+monomers: ["D", "A"]
+
+# ========================================================
+# UV-Vis Parameters
+# ========================================================
+uv_vis:
+  dipole_dipole:
+    R: 5.0e-10
+    eps_r: 1.0
+
+  frenkel:
+    eps: [5.0, 4.5]
+    mu: [10.0, 10.0]
+    J_SE: -0.7
+
+  plot:
+    points: 220
+    std_dev: 0.2
+    energy_range: [0.4, 6.5]
+
+# ========================================================
+# NMR Parameters
+# ========================================================
+
+nmr:
+  trimer_file: 'HNMR_trimers.csv'   # file with trimer shifts
+  dimer_file: 'HNMR_dimers.csv'     # file with dimer shifts
+
+  plot:
+    points: 500
+    half_width: 0.2
+    shift_range: [21.7, 31.7]
+    reference_shift: 31.7
+
+# ========================================================
+# MS Parameters
+# ========================================================
+
+ms:
+  # each formula corresponds 1:1 to a list of monomers + endgroup ('*')
+  formulas: 
+    - {'C':9, 'O':2, 'S':1, 'H':10}
+    - {'C':7, 'N':3, 'H':5}
+    - {'C':1, 'H':3}
+
+  plot:
+    mass_range: [140, 3700]
+    bin_width: 10
+
+  noise:
+    extra_peaks: 5
+    weight: 0.2
