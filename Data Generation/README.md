@@ -8,13 +8,15 @@ Writes spectra, sequences, and sequence correlations to an HDF5 dataset.
 ```text
 .
 ├── configs/ 
-|   ├── seq_config_all.yaml
-|   ├── seq_config_random.yaml      
-|   ├── seq_config_mixtures.yaml             
-│   ├── spectra_config_NOISE0.yaml
-│   ├── spectra_config_NOISE1.yaml
-│   ├── spectra_config_NOISE2.yaml
-|   └── spectra_config_mixtures_NOISE0.yaml
+│   ├── seq/
+│   │    ├── all.yaml
+│   │    ├── random.yaml      
+│   │    └── mixtures.yaml
+│   └── spectra/
+│        ├── NOISE0.yaml
+│        ├── NOISE1.yaml
+│        ├── NOISE2.yaml
+│        └── mixtures_NOISE0.yaml
 ├── seq_config.py               # loads a seq_config YAML file into SeqConfig parameter objects
 ├── seq_generator.py            # reads a seq_config YAML file -> writes .csv file of sequences 
 ├── spectra_config.py           # loads a spectra_config YAML file into SpectraConfig parameter objects
@@ -29,9 +31,9 @@ Writes spectra, sequences, and sequence correlations to an HDF5 dataset.
 ### Sequence generator usage
 
 ```bash
-python seq_generator.py --config configs/seq_config_all.yaml
-python seq_generator.py --config configs/seq_config_random.yaml
-python seq_generator.py --config configs/seq_config_mixtures.yaml
+python seq_generator.py --config configs/seq/all.yaml
+python seq_generator.py --config configs/seq/random.yaml
+python seq_generator.py --config configs/seq/mixtures.yaml
 ```
 
 There are three modes for sequence generation: 'all', 'random', and 'mixtures'.
@@ -64,12 +66,12 @@ in each row in this implementation. This is implented so that the code can be mo
 
 ### Editing a sequence config
 
-'all' mode: edit `configs/seq_config_all.yaml` to change the range of sequence lengths.
+'all' mode: edit `configs/seq/all.yaml` to change the range of sequence lengths.
 
-'random' mode: edit `configs/seq_config_random.yaml` to change the range of sequence lengths,
+'random' mode: edit `configs/seq/random.yaml` to change the range of sequence lengths,
 the fraction of donor monomers, or the number of samples.
 
-'mixtures' mode: edit `configs/seq_config_mixtures.yaml` to change the range of sequence lengths,
+'mixtures' mode: edit `configs/seq/mixtures.yaml` to change the range of sequence lengths,
 the fraction of donor monomers, the sequence correlations (`lambdas`), the number of sequences per mixture
 and their ratios (`ratios`), and the number of mixtures.
 
@@ -78,11 +80,11 @@ and their ratios (`ratios`), and the number of mixtures.
 ### Spectra generation usage
 
 ```bash
-python input_generator.py --config configs/spectra_config_NOISE0.yaml
-python input_generator.py --config configs/spectra_config_NOISE1.yaml
-python input_generator.py --config configs/spectra_config_NOISE2.yaml
+python input_generator.py --config configs/spectra/NOISE0.yaml
+python input_generator.py --config configs/spectra/NOISE1.yaml
+python input_generator.py --config configs/spectra/NOISE2.yaml
 
-python input_generator.py --config configs/spectra_config_mixtures_NOISE0.yaml
+python input_generator.py --config configs/spectra/mixtures_NOISE0.yaml
 ```
 
 There are two modes for spectra generation: 'single' or 'mixtures'; default is 'single'.
@@ -98,7 +100,7 @@ Each run in 'single' mode produces an `.h5` file with the following datasets:
 
 'mixtures' mode: generates one `.h5` file with spectra generated from a weighted combination of multiple sequences.
 
-Each run in 'single' mode produces an `.h5` file with the following datasets:
+Each run in 'mixtures' mode produces an `.h5` file with the following datasets:
 
 - `sequences` — lists of the copolymer sequence strings in each mixture
 - `ratios` — lists of the ratios for each copolymer sequence in each mixture
@@ -108,7 +110,7 @@ Each run in 'single' mode produces an `.h5` file with the following datasets:
 
 ### Adding a new spectra config
 
-Copy an existing file in `configs/` and adjust the values you need to
+Copy an existing file in `configs/spectra/` and adjust the values you need to
 change. A `.csv` file containing sequences must be provided in `Data Generation/`.
 
 Each config file has up to four sections: an overview section plus a parameter
