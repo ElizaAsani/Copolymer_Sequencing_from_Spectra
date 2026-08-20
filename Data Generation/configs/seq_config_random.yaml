@@ -1,0 +1,14 @@
+# =====================================================================
+# Copolymer Sequence Generation - random mode
+# =====================================================================
+
+mode: random
+
+monomers: ["D", "A"]
+
+min_length: 3
+max_length: 20
+
+random:
+  f_D: 0.5
+  num_sequences: 50000

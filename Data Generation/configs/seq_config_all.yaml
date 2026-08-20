@@ -1,0 +1,13 @@
+# =====================================================================
+# Copolymer Sequence Generation - all mode
+# =====================================================================
+
+mode: all
+
+monomers: ["D", "A"]
+
+min_length: 3
+max_length: 20
+
+all:
+  output_dir: all/
