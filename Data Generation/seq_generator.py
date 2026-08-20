@@ -148,38 +148,6 @@ def calcLambda(sequence):
     
     return round((1 - (2/avgBlockLength)), 2)
 
-
-def calcEntropy(sequence):
-    """Calculates the sequence entropy of a sequence. 
-    """
-    p_D = sequence.count(monomers[0]) / len(sequence)
-    p_A = sequence.count(monomers[1]) / len(sequence)
-
-    if p_D == 0 or p_A == 0:
-        return 0
-
-    return - (p_D * np.log2(p_D) + p_A * np.log2(p_A))
-
-def calcMarkovEntropy(sequence):
-    """Calculates the Markov entropy of a sequence. 
-    """
-    p_D = sequence.count(monomers[0]) / len(sequence)
-    p_A = sequence.count(monomers[1]) / len(sequence)
-
-    if p_D == 0 or p_A == 0:
-        return 0
-
-    # calculate transition probabilities
-    p_DD = sum(1 for i in range(len(sequence) - 1) if sequence[i] == monomers[0] and sequence[i + 1] == monomers[0]) / sequence.count(monomers[0])
-    p_DA = sum(1 for i in range(len(sequence) - 1) if sequence[i] == monomers[0] and sequence[i + 1] == monomers[1]) / sequence.count(monomers[0])
-    p_AA = sum(1 for i in range(len(sequence) - 1) if sequence[i] == monomers[1] and sequence[i + 1] == monomers[1]) / sequence.count(monomers[1])
-    p_AD = sum(1 for i in range(len(sequence) - 1) if sequence[i] == monomers[1] and sequence[i + 1] == monomers[0]) / sequence.count(monomers[1])
-
-    # calculate Markov entropy
-    markov_entropy = - (p_D * (p_DD * np.log2(p_DD) + p_DA * np.log2(p_DA)) + p_A * (p_AA * np.log2(p_AA) + p_AD * np.log2(p_AD)))
-
-    return markov_entropy
-    
 if __name__ == '__main__':
     #main()
     allseq()
