@@ -9,18 +9,23 @@ import yaml
 @dataclass
 class SeqConfig:
     """Parameters for copolymer sequence generation"""
-    mode: str           # 'random' or 'all'
+    mode: str           # 'random', 'all', 'mixtures'
     monomers: list
 
     min_length: int = None
     max_length: int = None
 
     # mode: random
-    f_D: float = None
+    f_D: float = None           # also used for 'mixtures'
     num_sequences: int = None
 
     # mode: all
-    output_dir: str = None
+    output_dir: str = None      # also used for 'mixtures'
+
+    # mode: mixtures
+    num_mixtures: int = None
+    lambdas: list = None
+    ratios: list = None
 
 def load_config(path: str) -> SeqConfig:
     raw = yaml.safe_load(Path(path).read_text())
@@ -46,7 +51,14 @@ def load_config(path: str) -> SeqConfig:
     elif mode =="all":
         cfg.output_dir = raw["all"]["output_dir"]
 
+    elif mode == "mixtures":
+        cfg.f_D = raw["mixtures"]["f_D"]
+        cfg.num_mixtures = raw["mixtures"]["num_mixtures"]
+        cfg.lambdas = raw["mixtures"]["lambdas"]
+        cfg.ratios = raw["mixtures"]["ratios"]
+        cfg.output_dir = raw["mixtures"]["output_dir"]
+
     else:
-        raise ValueError(f"Invalid mode: {mode}. Must be 'random' or 'all'.")
+        raise ValueError(f"Invalid mode: {mode}. Must be 'random', 'all', or 'mixtures'.")
     
     return cfg

@@ -13,15 +13,23 @@ from MS import MSParameters, BarPlotParameters, MSNoiseParameters
 @dataclass
 class SpectraConfig:
     """Parameters for copolymer spectral simulation"""
-    simulate_uv_vis: bool
-    simulate_nmr: bool
-    simulate_ms: bool
+    mode: str = "single"        # "single" or "mixtures"
 
-    sequence_file: str
-    output_file: str
+    simulate_uv_vis: bool = False
+    simulate_nmr: bool = False
+    simulate_ms: bool = False
 
-    monomers: list
+    monomers: list = None
 
+    # mode: single
+    sequence_file: str = None
+    output_file: str = None
+
+    # mode: mixtures
+    mixtures_lambdas: list = None
+    output_dir: str = None
+
+    # spectra params
     frenkel_params: "FrenkelParameters | None" = None
     uv_vis_plot_params: "GaussianPlotParameters | None" = None
 
@@ -36,20 +44,29 @@ class SpectraConfig:
 def load_config(path: str) -> SpectraConfig:
     raw = yaml.safe_load(Path(path).read_text())
 
+    mode = raw.get("mode", "single")
+
     monomers = raw["monomers"]
     simulate = raw["simulate"]
     io = raw["io"]
 
     cfg = SpectraConfig(
+        mode = mode,
+
         simulate_uv_vis = simulate["uv_vis"],
         simulate_nmr = simulate["nmr"],
         simulate_ms = simulate["ms"],
 
-        sequence_file = io["sequence_file"],
-        output_file = io["output_file"],
-
         monomers = monomers
     )
+
+    if mode == "single":
+        cfg.sequence_file = io["sequence_file"]
+        cfg.output_file = io["output_file"]
+
+    elif mode == "mixtures":
+        cfg.mixtures_lambdas = io["mixtures_lambdas"]
+        cfg.output_dir = io["output_dir"]
 
     if cfg.simulate_uv_vis:
         uv = raw["uv_vis"]

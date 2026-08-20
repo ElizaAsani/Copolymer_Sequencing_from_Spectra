@@ -20,6 +20,8 @@ def run(cfg):
         run_random(cfg)
     elif cfg.mode == "all":
         run_all(cfg)
+    elif cfg.mode == "mixtures":
+        run_mixtures(cfg)
 
 def run_random(cfg):
     """mode: random - N unique sequences, lengths and lambda uniformly sampled"""
@@ -42,7 +44,7 @@ def run_random(cfg):
             rows.append([seq, lamb])
     
     # create input file
-    filename = f'sequences_{cfg.min_length}-{cfg.max_length}.csv'
+    filename = f'seq_{cfg.min_length}-{cfg.max_length}.csv'
     
     # open and write to csv file
     with open(filename, 'w', newline='') as csvfile:
@@ -56,7 +58,7 @@ def run_all(cfg):
 
     for length in range(cfg.min_length, cfg.max_length + 1):
         # create input file
-        filename = os.path.join(cfg.output_dir, f'all_sequences_{length}.csv')
+        filename = os.path.join(cfg.output_dir, f'all_seq_{length}.csv')
 
         # generate all sequences, canonicalize, and drop duplicates
         allSeq = generateAllSequences(cfg.monomers, length)
@@ -70,7 +72,41 @@ def run_all(cfg):
                 lamb = calcLambda(seq)
 
                 # write sequence and lambdato file
-                writer.writerow([seq, lamb])     
+                writer.writerow([seq, lamb])  
+
+def run_mixtures(cfg):
+    """mode: mixtures - N mixtures of sequences of lengths in range [min_length, max_length]
+        for each provided lambda"""
+
+    os.makedirs(cfg.output_dir, exist_ok=True)
+
+    for lamb in cfg.lambdas:
+        # create input file
+        filename = os.path.join(cfg.output_dir, f'mixtures_lamb{lamb}.csv')
+        
+        # if existing file, rewrite
+        f = open(filename, 'w')
+        f.write("")
+        f.close()
+        
+        # open and write to csv file
+        with open(filename, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+
+            for _ in range(cfg.num_mixtures):
+                seqs = []
+        
+                for _ in range(len(cfg.ratios)):
+                    # pick sequence length 
+                    length = random.randint(cfg.min_length, cfg.max_length)
+
+                    # generate sequence
+                    seq = generateMarkovSequence(cfg.monomers, cfg.f_D, lamb, length)
+                    seq = canonicalizeSequence(seq)
+                    seqs.append(seq)
+                    
+                # write sequence to file
+                writer.writerow([seqs, cfg.ratios, lamb])   
         
 def generateMarkovSequence(monomers, f_D, lambd, length):
     """Generates a string representation of a polymer chain of given length
