@@ -1,5 +1,5 @@
 """
-Copolymer Input Generation
+Copolymer Spectra Generation
 """
 
 import argparse

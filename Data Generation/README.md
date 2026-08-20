@@ -20,7 +20,7 @@ Writes spectra, sequences, and sequence correlations to an HDF5 dataset.
 ├── seq_config.py               # loads a seq_config YAML file into SeqConfig parameter objects
 ├── seq_generator.py            # reads a seq_config YAML file -> writes .csv file of sequences 
 ├── spectra_config.py           # loads a spectra_config YAML file into SpectraConfig parameter objects
-├── input_generator.py          # reads a spectra_config YAML file and sequence file -> writes .h5 dataset
+├── spectra_generator.py        # reads a spectra_config YAML file and sequence file -> writes .h5 dataset
 ├── MS.py                       # Mass spec simulator + parameter classes 
 ├── NMR.py                      # NMR simulator + parameter classes
 └── UV_Vis.py                   # UV-Vis simulator + parameter classes
@@ -80,11 +80,11 @@ and their ratios (`ratios`), and the number of mixtures.
 ### Spectra generation usage
 
 ```bash
-python input_generator.py --config configs/spectra/NOISE0.yaml
-python input_generator.py --config configs/spectra/NOISE1.yaml
-python input_generator.py --config configs/spectra/NOISE2.yaml
+python spectra_generator.py --config configs/spectra/NOISE0.yaml
+python spectra_generator.py --config configs/spectra/NOISE1.yaml
+python spectra_generator.py --config configs/spectra/NOISE2.yaml
 
-python input_generator.py --config configs/spectra/mixtures_NOISE0.yaml
+python spectra_generator.py --config configs/spectra/mixtures_NOISE0.yaml
 ```
 
 There are two modes for spectra generation: 'single' or 'mixtures'; default is 'single'.
