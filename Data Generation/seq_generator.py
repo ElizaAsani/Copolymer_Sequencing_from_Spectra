@@ -17,6 +17,24 @@ max_length = 20             # max polymer length (50)
 numSequences = 10000         # number of sequences to generate (5000)
 
 def main():
+
+    # generate unique set of sequences
+    sequences = set()
+    rows = []
+
+    while len(sequences) < numSequences:
+        # pick lambda from a uniform distr.
+        lamb = random.uniform(-1, 0.99)
+        lamb = np.round(lamb, 2)  
+
+        # pick sequence length 
+        seq_length = random.randint(min_length, max_length)              
+        seq = generateSequence(lamb, seq_length)
+        seq = canonicalizeSequence(seq)
+
+        if seq not in sequences:
+            sequences.add(seq)
+            rows.append([seq, lamb])
     
     # create input file
     filename = f'sequences_{min_length}-{max_length}.csv'
@@ -28,24 +46,8 @@ def main():
     
     # open and write to csv file
     with open(filename, 'w', newline='') as csvfile:
-        
         writer = csv.writer(csvfile)
-    
-        for i in range(numSequences):
-
-            # generate sequence based on random value of lambda and sequence length
-            
-            # pick lambda from a uniform distr.
-            lamb = random.uniform(-1, 0.99)
-            lamb = np.round(lamb, 2)  
-
-            # pick sequence length 
-            seq_length = random.randint(min_length, max_length)              
-            seq = generateSequence(lamb, seq_length)
-            seq = canonicalizeSequence(seq)
-            
-            # write sequence to file
-            writer.writerow([seq, lamb])     
+        writer.writerows(rows)
 
 def allseq():
 
