@@ -17,9 +17,12 @@ Writes spectra, sequences, and sequence correlations to an HDF5 dataset.
 │        ├── NOISE1.yaml
 │        ├── NOISE2.yaml
 │        └── mixtures_NOISE0.yaml
+├── degeneracy/                 # contains files to compute spectral degeneracies
 ├── seq_config.py               # loads a seq_config YAML file into SeqConfig parameter objects
 ├── seq_generator.py            # reads a seq_config YAML file -> writes .csv file of sequences 
 ├── spectra_config.py           # loads a spectra_config YAML file into SpectraConfig parameter objects
+├── HNMR_dimers.csv             # req. for NMR simulation
+├── HNMR_trimers.csv            # req. for NMR simulation
 ├── spectra_generator.py        # reads a spectra_config YAML file and sequence file -> writes .h5 dataset
 ├── MS.py                       # Mass spec simulator + parameter classes 
 ├── NMR.py                      # NMR simulator + parameter classes
@@ -148,3 +151,7 @@ io:
 Field-level meaning, units, and defaults for each parameter are documented on the parameter classes themselves in `UV_Vis.py`,
 `NMR.py`, and `MS.py`. Note that the NMR simulator requires a trimer file and a dimer (end-group) file, both `.csv`, which contain the
 chemical shifts and multiplicities of the atoms in each subgroup.
+
+## Degeneracy Calculation
+
+Details for degeneracy calculations can be found in `./degeneracy/README.md`.
