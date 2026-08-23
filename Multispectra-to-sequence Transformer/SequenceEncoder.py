@@ -199,7 +199,7 @@ class SeqDatasetMixtures(SeqDataset):
         }
 
 
-def stratified_split_indices(dataset, train_frac=0.7, val_frac=0.15, test_frac=0.15, seed=0):
+def stratified_split_indices(sequence_lengths, train_frac=0.7, val_frac=0.15, test_frac=0.15, seed=0):
     """
     Stratified split by sequence length using only torch + Python.
     Returns: train_idx, val_idx, test_idx (torch.LongTensor)
@@ -212,7 +212,7 @@ def stratified_split_indices(dataset, train_frac=0.7, val_frac=0.15, test_frac=0
     # group indices by length
     buckets = defaultdict(list)
 
-    for idx, L in enumerate(dataset.sequence_lengths):
+    for idx, L in enumerate(sequence_lengths):
         buckets[int(L)].append(idx)
 
     train_idx, val_idx, test_idx = [], [], []
