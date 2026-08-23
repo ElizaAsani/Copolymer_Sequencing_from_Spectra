@@ -1,3 +1,13 @@
+# Output files
+Multispectra-to-sequence Transformer/Output/
+Data Generation/all/
+Data Generation/degeneracy/ms/
+Data Generation/degeneracy/nmr
+Data Generation/degeneracy/uv_vis
+*.csv
+*.h5
+*.sh
+
 # VS code
 .vscode/
 
