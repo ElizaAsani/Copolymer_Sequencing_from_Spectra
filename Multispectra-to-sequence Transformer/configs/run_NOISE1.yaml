@@ -1,0 +1,28 @@
+# =====================================================================
+# Training + Evaluation Run Configuration - NOISE0
+# =====================================================================
+
+io:
+  data_file: ../Data Generation/multispectra_NOISE1.h5
+  output_dir: ./Output/multispectra/all/NOISE1
+  saved_model: false
+
+scale:
+  uv_vis: true
+  nmr: false
+  ms: false
+
+model: 
+  d_model: 128
+  h: 4
+  N: 3
+  d_ff: 256
+  dropout: 0.1
+
+training:
+  epochs: 1000
+  batch_size: 64
+
+beam_search:
+  beam_width: 10
+  alpha: 1

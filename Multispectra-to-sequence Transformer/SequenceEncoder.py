@@ -17,7 +17,7 @@ class SeqDataset(Dataset):
     eos_token = special_tokens.index('EOS')
     pad_token = special_tokens.index('PAD')
     
-    def __init__(self, path, scale={'uv_vis': False, 'nmr': False, 'ms': False}, mixtures=False):
+    def __init__(self, path, scale={'uv_vis': False, 'nmr': False, 'ms': False}, max_length=None, mixtures=False):
         super().__init__()
 
         self.h5_path = path
@@ -46,7 +46,10 @@ class SeqDataset(Dataset):
         self.alphabet = SeqDataset.special_tokens + self.h5['sequence'].attrs['monomers'].tolist()
         self.num_chars = len(self.alphabet)
 
-        self.max_sequence_length = self.h5['sequence'].attrs['max_length']   
+        if max_length is not None:
+            self.max_sequence_length = max_length
+        else: 
+            self.max_sequence_length = max(self.sequence_lengths) 
         self.model_max_sequence_length = self.max_sequence_length + 1  
 
         self.causal_mask = SeqDataset.causal_mask(self.model_max_sequence_length)
@@ -171,8 +174,8 @@ class SeqDatasetMixtures(SeqDataset):
     """
     Subclass of SeqDataset to read in mixtures data, which has multiple sequences per spectra and lambda values. 
     """
-    def __init__(self, path, scale={'uv_vis': False, 'nmr': False, 'ms': False}):
-        super().__init__(path, scale, mixtures=True)
+    def __init__(self, path, max_length, scale={'uv_vis': False, 'nmr': False, 'ms': False}):
+        super().__init__(path, scale, max_length=max_length,mixtures=True)
 
         self.ratios = self.h5['ratio'][:]
     

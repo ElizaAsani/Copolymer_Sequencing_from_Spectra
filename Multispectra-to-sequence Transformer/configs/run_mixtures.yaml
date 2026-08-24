@@ -1,0 +1,17 @@
+# =====================================================================
+# Mixtures Inference Run Configuration
+# =====================================================================
+
+io:
+  mixtures_file_template: ../Data Generation/mixtures_L10/mixtures_lamb{lamb}.h5
+  mixtures_lambdas: [-0.75, -0.5, -0.25, 0, 0.25, 0.5, 0.75]
+  output_dir: ./Output/multispectra/all/NOISE0
+
+scale:
+  uv_vis: true
+  nmr: false
+  ms: false
+
+beam_search:
+  beam_width: 10
+  alpha: 1

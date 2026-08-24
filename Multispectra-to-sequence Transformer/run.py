@@ -3,13 +3,11 @@ Code to run sequence generation from spectra
 """
 
 import os
-
-os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"  
-os.environ["OMP_NUM_THREADS"] = "1"
+import argparse
 
 import torch
 from torch.utils.data import DataLoader
+import yaml
 
 from SequenceEncoder import SeqDataset, make_splits
 from model import build_multi_spectra_transformer
@@ -18,44 +16,62 @@ from decode import inference, beam_search, plot_beam_histogram
 
 from plots import plot_errors
 
+from config import load_config, write_model_architecture
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="Train and evaluate multispectra-to-sequence transformer")
+    parser.add_argument("--config", type=str, required=True, help="Path to YAML configuration file")
+    return parser.parse_args()
+
+args = parse_args()
+cfg = load_config(args.config)
+
 # initialize device
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 print(device)
 
 # directory to store output
-data_file = "multispectra_NOISE2.h5"
-path = r"./Output/multispectra/all/NOISE2"
-if not os.path.exists(path):
-    os.makedirs(path)
-chkpt_path = path + r"/chkpts"
+script_dir = os.path.dirname(os.path.abspath(__file__))
+data_file = os.path.normpath(os.path.join(script_dir, cfg.data_file))
+out_path = os.path.normpath(os.path.join(script_dir, cfg.output_dir))
+if not os.path.exists(out_path):
+    os.makedirs(out_path)
+chkpt_path = os.path.join(out_path, "chkpts")
 if not os.path.exists(chkpt_path):
     os.makedirs(chkpt_path)
-saved_model = False
-saved_model_path = path + r"/model_dict"   
-output_path = path + r"/output.txt"
-model_path = path + r"/model.txt"
+saved_model = cfg.saved_model
+saved_model_path = os.path.join(out_path, "model_dict")
+output_path = os.path.join(out_path, "output.txt")
+model_path = os.path.join(out_path, "model.txt")
 
 # load dataset
-scale = {'uv_vis': True, 'nmr': False, 'ms': False}
+scale = cfg.scale
 dataset = SeqDataset(data_file, scale)
-
-# transformer parameters 
-d_model = 128
-h=4
-N=3
-d_ff = 256
-dropout = 0.1
 
 # initialize model
 transformer = build_multi_spectra_transformer(spec_lengths=dataset.spectra_length,
                                 seq_length=dataset.model_max_sequence_length,
                                 vocab_size=dataset.num_chars, 
-                                d_model=d_model, h=h, N=N, d_ff=d_ff, dropout=dropout)
+                                d_model=cfg.d_model, h=cfg.h, N=cfg.N, d_ff=cfg.d_ff, dropout=cfg.dropout)
 transformer.to(device)
 
+# write model architecture to config file
+model_config_path = os.path.join(out_path, "model_config.yaml")
+model_config = {
+    "spec_lengths": {key: int(value) for key, value in dataset.spectra_length.items()},
+    "seq_length": int(dataset.max_sequence_length),
+    "vocab_size": int(dataset.num_chars),
+    "d_model": cfg.d_model,
+    "h": cfg.h,
+    "N": cfg.N,
+    "d_ff": cfg.d_ff,
+    "dropout": cfg.dropout
+}
+write_model_architecture(model_config_path, model_config)
+
 # training params
-epochs = 1000   
-batch_size = 64 
+epochs = cfg.epochs   
+batch_size = cfg.batch_size
 
 # generate train/test data
 generator = torch.Generator().manual_seed(42)
@@ -78,15 +94,15 @@ else:
     print(f"Scaling: {dataset.scale}", file=f)
     print(f"Spectrum size: {dataset.spectra_length}", file=f)
     print(f"Batch size: {batch_size}", file=f)
-    print(f"Model Dimension: {d_model}, ", file=f)
-    print(f"Heads: {h}", file=f)
-    print(f"Number of Stacked Layers: {N}", file=f)
-    print(f"Feed-Forward Layer Dimensions: {d_ff}", file=f)
-    print(f"Dropout: {dropout}", file=f)
+    print(f"Model Dimension: {cfg.d_model}, ", file=f)
+    print(f"Heads: {cfg.h}", file=f)
+    print(f"Number of Stacked Layers: {cfg.N}", file=f)
+    print(f"Feed-Forward Layer Dimensions: {cfg.d_ff}", file=f)
+    print(f"Dropout: {cfg.dropout}", file=f)
     print(transformer, file=f)
     f.close()
 
-    train_model(transformer, train_dl, val_dl, epochs, d_model, chkpt_path, device=device).savefig(path + r"/loss.png")
+    train_model(transformer, train_dl, val_dl, epochs, cfg.d_model, chkpt_path, device=device).savefig(os.path.join(out_path, "loss.png"))
     torch.save(transformer.state_dict(), saved_model_path)
     transformer.eval()
 
@@ -105,24 +121,24 @@ with(open(output_path, "w")) as f:
         f.write(predicted_sequences[j] + "\n\n")
 
 # error analysis
-errors_path = path + r"/errors"
+errors_path = os.path.join(out_path, "errors")
 if not os.path.exists(errors_path):
     os.makedirs(errors_path)
-errors_file_path = errors_path + r"/errors.csv"
+errors_file_path = os.path.join(errors_path, "errors.csv")
 errors_df, errors_fig = plot_errors(target_sequences, predicted_sequences, sequence_lengths, errors)
 errors_df.to_csv(errors_file_path, index=False)
-errors_fig.savefig(errors_path + r"/errors.png")
+errors_fig.savefig(os.path.join(errors_path, "errors.png"))
 
 # beam search
-beam_width = 10
-alpha = 1
+beam_width = cfg.beam_width
+alpha = cfg.alpha
 threshold = 1
 
-beam_search_path = path + rf"/beam_search/alpha_{alpha}"
+beam_search_path = os.path.join(out_path, f"beam_search/alpha_{alpha}")
 if not os.path.exists(beam_search_path):
     os.makedirs(beam_search_path)
-beam_search_file_path = beam_search_path + r"/beam_search.txt"
-beam_search_csv_path = beam_search_path + r"/beam_search.csv"
+beam_search_file_path = os.path.join(beam_search_path, "beam_search.txt")
+beam_search_csv_path = os.path.join(beam_search_path, "beam_search.csv")
 
 test_dl = DataLoader(test_set, batch_size=max(1, 4*(batch_size//beam_width)))
 beam_df, percent_hits, percent_top_5_hits, percent_top_1_hits = beam_search(transformer, test_dl, device=device, beam_width=beam_width, alpha=alpha)
@@ -137,4 +153,4 @@ print(f"Percent top 1 hits: {percent_top_1_hits}%", file=f)
 f.close()
 
 beam_df.to_csv(beam_search_csv_path, index=False)
-plot_beam_histogram(beam_search_csv_path, threshold=threshold).savefig(beam_search_path + rf"/beam_histogram_thresh_{threshold}.png")
+plot_beam_histogram(beam_search_csv_path, threshold=threshold).savefig(os.path.join(beam_search_path, f"beam_histogram_thresh_{threshold}.png"))
