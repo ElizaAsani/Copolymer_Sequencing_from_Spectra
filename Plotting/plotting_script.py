@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from plot_reconstruction import plot_sequence_reconstruction
 from plot_degeneracies import plot_degeneracies
+from plot_subgroup_distance import plot_subgroup_distances
 
 plt.style.use('figure.mplstyle')
 
@@ -45,3 +46,7 @@ plot_degeneracies(degeneracy_folders, colors)
 plot_sequence_reconstruction(folders_by_noise[noise_levels[0]], colors, alpha=alpha, degeneracy_folders=degeneracy_folders)
 plot_sequence_reconstruction(folders_by_noise[noise_levels[1]], colors, alpha=alpha)
 plot_sequence_reconstruction(folders_by_noise[noise_levels[2]], colors, alpha=alpha)
+
+## ---- Figure 5, S6---- ##
+for _, folders in folders_by_noise.items():
+    plot_subgroup_distances(folders, colors)
