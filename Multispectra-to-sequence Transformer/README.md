@@ -16,7 +16,8 @@ Trains and evaluates the multispectra-to-sequence transformer.
 ├── run_mixtures.py             # beam search inference on mixtures
 ├── model.py                    # model architecture
 ├── train.py                    # training script
-├── decode.py                   # decoding functions, including greedy & beam search
 ├── evaluate.py                 # accuracy metrics
+├── decode.py                   # greedy decoding 
+├── beam_search.py              # beam search
 └── SequenceEncoder.py          # dataset class
 ```

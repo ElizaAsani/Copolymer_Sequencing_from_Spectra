@@ -12,7 +12,8 @@ from SequenceEncoder import SeqDataset, make_splits
 from model import build_multi_spectra_transformer
 from train import train_model
 from evaluate import get_accuracy
-from decode import inference, beam_search, plot_beam_histogram
+from decode import inference
+from beam_search import beam_search, plot_beam_histogram
 
 from plots import plot_errors
 

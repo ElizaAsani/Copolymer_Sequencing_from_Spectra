@@ -9,7 +9,7 @@ import torch
 
 from SequenceEncoder import SeqDatasetMixtures
 from model import build_multi_spectra_transformer
-from decode import beam_search_mixtures
+from beam_search import beam_search_mixtures
 
 from config import load_mix_config, load_model_architecture
 
