@@ -1,7 +1,7 @@
 """
 Training Transformer 
 """
-import matplotlib.pyplot as plt
+
 import copy 
 
 import torch
