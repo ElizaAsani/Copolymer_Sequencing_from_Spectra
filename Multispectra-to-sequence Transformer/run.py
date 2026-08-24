@@ -93,13 +93,6 @@ else:
     print(f"Number of samples: {len(dataset)}", file=f) 
     print(f"Train/Val/Test split: {len(train_set)}/{len(val_set)}/{len(test_set)}", file=f)
     print(f"Scaling: {dataset.scale}", file=f)
-    print(f"Spectrum size: {dataset.spectra_length}", file=f)
-    print(f"Batch size: {batch_size}", file=f)
-    print(f"Model Dimension: {cfg.d_model}, ", file=f)
-    print(f"Heads: {cfg.h}", file=f)
-    print(f"Number of Stacked Layers: {cfg.N}", file=f)
-    print(f"Feed-Forward Layer Dimensions: {cfg.d_ff}", file=f)
-    print(f"Dropout: {cfg.dropout}", file=f)
     print(transformer, file=f)
     f.close()
 
@@ -115,11 +108,7 @@ with(open(output_path, "w")) as f:
     f.write(f"Percent sequences reconstructed exactly: {seq_acc}\n")
     f.write(f"Percent characters reconstructed exactly: {char_acc}\n")
     f.write(f"Percent characters reconstructed per sequence: {char_per_seq_acc}\n")
-    f.write(f"Number of sequences with different lengths: {wrong_lengths}\n\n")
-
-    for j in range(10):
-        f.write(target_sequences[j] + "\n")
-        f.write(predicted_sequences[j] + "\n\n")
+    f.write(f"Number of sequences with different lengths: {wrong_lengths}\n")
 
 # error analysis
 errors_path = os.path.join(out_path, "errors")
