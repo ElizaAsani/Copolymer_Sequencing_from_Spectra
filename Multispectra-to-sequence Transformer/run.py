@@ -16,8 +16,6 @@ from evaluate import get_accuracy
 from decode import inference
 from beam_search import beam_search, plot_beam_histogram
 
-from plots import plot_errors
-
 from config import load_config, write_model_architecture
 
 def parse_args():
@@ -99,7 +97,7 @@ else:
 
     train_loss, val_loss = train_model(transformer, train_dl, val_dl, epochs, cfg.d_model, chkpt_path, device=device)
     
-    loss_df = pd.DataFrame({"epochs": list(range(1, len(train_loss) + 1)), "train_loss": train_loss, "validate_loss": val_loss})
+    loss_df = pd.DataFrame({"epoch": list(range(1, len(train_loss) + 1)), "train_loss": train_loss, "validate_loss": val_loss})
     loss_df.to_csv(os.path.join(out_path, "loss_history.csv"), index=False)
 
     torch.save(transformer.state_dict(), saved_model_path)
@@ -120,9 +118,13 @@ errors_path = os.path.join(out_path, "errors")
 if not os.path.exists(errors_path):
     os.makedirs(errors_path)
 errors_file_path = os.path.join(errors_path, "errors.csv")
-errors_df, errors_fig = plot_errors(target_sequences, predicted_sequences, sequence_lengths, errors)
+errors_df = pd.DataFrame({
+    "target_sequence": target_sequences,
+    "predicted_sequence": predicted_sequences,
+    "sequence_length": sequence_lengths,
+    "num_errors": errors
+})
 errors_df.to_csv(errors_file_path, index=False)
-errors_fig.savefig(os.path.join(errors_path, "errors.png"))
 
 # beam search
 beam_width = cfg.beam_width
