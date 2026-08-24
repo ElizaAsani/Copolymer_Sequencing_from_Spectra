@@ -96,19 +96,11 @@ def train_model(model, train_dl, test_dl, epochs, d_model, chkpt_path, device='c
                   + f", Validation loss : {validate_loss[-1]}")
         if (epoch % 50 == 0) and (epoch > 0):
             torch.save(model.state_dict(), f"{chkpt_path}/epoch_{epoch}.pt")
-        
-    loss_fig, ax = plt.subplots()
-    ax.set_title("Cross Entropy Loss")
-    ax.set_xlabel("Epoch")
-    ax.set_ylabel("Loss")
-    ax.plot(train_loss, label='train loss')  
-    ax.plot(validate_loss, label='validate loss')
-    ax.legend()
     
     # reload best weights
     model.load_state_dict(best_val_model_wts)
 
-    return loss_fig
+    return train_loss, validate_loss
     
 def calculate_loss(criterion, outputs, targets, sequence_lengths):
     """

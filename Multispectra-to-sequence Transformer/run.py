@@ -7,6 +7,7 @@ import argparse
 
 import torch
 from torch.utils.data import DataLoader
+import pandas as pd
 
 from SequenceEncoder import SeqDataset, make_splits
 from model import build_multi_spectra_transformer
@@ -96,7 +97,11 @@ else:
     print(transformer, file=f)
     f.close()
 
-    train_model(transformer, train_dl, val_dl, epochs, cfg.d_model, chkpt_path, device=device).savefig(os.path.join(out_path, "loss.png"))
+    train_loss, val_loss = train_model(transformer, train_dl, val_dl, epochs, cfg.d_model, chkpt_path, device=device)
+    
+    loss_df = pd.DataFrame({"epochs": list(range(1, len(train_loss) + 1)), "train_loss": train_loss, "validate_loss": val_loss})
+    loss_df.to_csv(os.path.join(out_path, "loss_history.csv"), index=False)
+
     torch.save(transformer.state_dict(), saved_model_path)
     transformer.eval()
 
