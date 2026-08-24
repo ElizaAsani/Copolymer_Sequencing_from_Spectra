@@ -59,7 +59,7 @@ batch_size = 64
 
 # generate train/test data
 generator = torch.Generator().manual_seed(42)
-train_set, val_set, test_set = make_splits(dataset.sequence_lengths, train_frac=0.7, val_frac=0.15, test_frac=0.15, seed=42)
+train_set, val_set, test_set = make_splits(dataset, train_frac=0.7, val_frac=0.15, test_frac=0.15, seed=42)
 train_dl = DataLoader(train_set, batch_size=batch_size)
 val_dl = DataLoader(val_set, batch_size=4*batch_size)
 test_dl = DataLoader(test_set, batch_size=4*batch_size)
