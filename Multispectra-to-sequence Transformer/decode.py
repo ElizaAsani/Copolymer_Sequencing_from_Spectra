@@ -8,7 +8,7 @@ import torch
 import torch.nn.functional as F
 
 from SequenceEncoder import SeqDataset
-from train import get_accuracy
+from evaluate import get_accuracy
 
 def inference(model, test_dl, device='cpu'):
     target_sequences = []

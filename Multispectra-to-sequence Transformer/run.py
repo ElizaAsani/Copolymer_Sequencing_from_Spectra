@@ -7,11 +7,11 @@ import argparse
 
 import torch
 from torch.utils.data import DataLoader
-import yaml
 
 from SequenceEncoder import SeqDataset, make_splits
 from model import build_multi_spectra_transformer
-from train import train_model, get_accuracy
+from train import train_model
+from evaluate import get_accuracy
 from decode import inference, beam_search, plot_beam_histogram
 
 from plots import plot_errors
