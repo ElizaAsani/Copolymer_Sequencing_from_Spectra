@@ -198,7 +198,8 @@ def run_mixtures(cfg):
                 chunks=(1,)
             )
             sequence_ds.attrs['monomers'] = cfg.monomers
-            sequence_ds.attrs['max_length'] = 20            # hard-coded to correspond to transformer model max length
+            sequence_ds.attrs['min_length'] = cfg.min_length
+            sequence_ds.attrs['max_length'] = cfg.max_length
 
             ratio_ds = f.create_dataset(
                 'ratio',
