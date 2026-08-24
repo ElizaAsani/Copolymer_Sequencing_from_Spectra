@@ -14,7 +14,7 @@ from model import build_multi_spectra_transformer
 from train import train_model
 from evaluate import get_accuracy
 from decode import inference
-from beam_search import beam_search, plot_beam_histogram
+from beam_search import beam_search
 
 from config import load_config, write_model_architecture
 
@@ -129,7 +129,6 @@ errors_df.to_csv(errors_file_path, index=False)
 # beam search
 beam_width = cfg.beam_width
 alpha = cfg.alpha
-threshold = 1
 
 beam_search_path = os.path.join(out_path, f"beam_search/alpha_{alpha}")
 if not os.path.exists(beam_search_path):
@@ -150,4 +149,3 @@ print(f"Percent top 1 hits: {percent_top_1_hits}%", file=f)
 f.close()
 
 beam_df.to_csv(beam_search_csv_path, index=False)
-plot_beam_histogram(beam_search_csv_path, threshold=threshold).savefig(os.path.join(beam_search_path, f"beam_histogram_thresh_{threshold}.png"))

@@ -8,7 +8,6 @@ _batched_beam_search()   : the shared core search loop used by both
 """
 
 import pandas as pd
-import numpy as np
 import torch
 import torch.nn.functional as F
 
@@ -207,78 +206,3 @@ def _batched_beam_search(model, encoder_input, vocab_size, batch_size, n_steps, 
     scores = torch.exp(scores)
 
     return beam, scores
-
-def plot_beam_histogram(beam_search_csv, threshold=1):
-    # plot histogram of decodings
-    import matplotlib.pyplot as plt
-    import ast
-
-    fig, axs = plt.subplots(2, 5, layout="constrained", figsize=(20,6))
-    fig.suptitle("Decoding Distribution for Individual Copolymer Sequences", fontsize=16)
-    style = {'facecolor': '#99CCFF', 'edgecolor': 'C0', 'linewidth': 3}
-    style_2 = {'facecolor': '#9FD1AC', 'edgecolor': '#095911', 'linewidth': 3}
-    
-    # load dataset
-    decodings = pd.read_csv(beam_search_csv)
-
-    i = 0
-    # enumerate through axes on plot
-    for ax in axs.flatten():
-        # get a sequence whose decodings are not certain
-        continue_search = True
-        while continue_search:
-            score = ast.literal_eval(decodings['Scores'][i])
-            if max(score) < threshold:
-                continue_search = False
-            else:
-                i += 1
-        continue_search = True
-        
-        # get decodings for single sequence
-        seq = decodings['Target Sequence'][i]   
-        predictions = decodings['Predicted Sequences'][i]
-        scores = decodings['Scores'][i]
-        num_errors = decodings['Num Errors'][i] 
-
-        # convert predictions to array of strings
-        predictions = ast.literal_eval(predictions)
-        scores = np.round(ast.literal_eval(scores), 4)
-        num_errors = ast.literal_eval(num_errors)
-
-        # create dataframe of predictions, scores, and errors
-        scores = {'Predictions': predictions, 'Scores': scores, 'Errors': num_errors}
-        scores_df = pd.DataFrame(scores)
-        scores_df = scores_df.sort_values(by='Errors')
-        
-        # generate text box of predictions
-        textBox = "Predictions: \n"
-        for pred_seq, score in zip(scores_df['Predictions'], scores_df['Scores']):
-            if pred_seq == seq:
-                textBox += f"*{pred_seq}: {score} \n"
-            else:
-                textBox += f"{pred_seq}: {score} \n"
-
-        # plot histogram as bar chart
-        container = ax.bar(scores_df['Predictions'], scores_df['Scores'], **style)
-        # color the correct bar 
-        try:
-            correct_idx = scores_df['Predictions'].tolist().index(seq)
-            container.patches[correct_idx].set(**style_2, label='correct')
-        except ValueError:
-            pass
-        try:
-            correct_idx = scores_df['Predictions'].tolist().index(seq[::-1]) # try reverse match
-            container.patches[correct_idx].set(**style_2, label='correct')
-        except ValueError:
-            pass
-        ax.set_title(f'Expected: {seq}')
-        ax.set_ylabel('Score')       
-        ax.set_xlabel('Number of Errors') 
-        # set ticks to be the number of errors
-        ax.set_xticks(np.arange(0, len(scores_df)), labels=scores_df['Errors'])
-        ax.set_ylim(0, 1)
-        ax.text(0.95, 0.95, textBox, transform=ax.transAxes, fontsize=8, horizontalalignment='right', verticalalignment='top', bbox=dict(facecolor='white', alpha=0.5, edgecolor='none'))        
-    
-        i += 1
-
-    return fig
