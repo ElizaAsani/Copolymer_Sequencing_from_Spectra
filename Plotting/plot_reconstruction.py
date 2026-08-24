@@ -32,11 +32,11 @@ def read_expected_reconstruction(folder):
 
 def read_model_output(folder, alpha):
 
-    with open(folder + "/output.txt", "r") as f:
+    with open(os.path.join(folder, "output.txt"), "r") as f:
         lines = f.readlines()
         greedy = round(float(lines[0].split(":")[1].strip())*100, 2)
 
-    with open(folder + f"/beam_search/alpha_{alpha}/beam_search.txt", "r") as f:
+    with open(os.path.join(folder, "beam_search", f"alpha_{alpha}", "beam_search.txt"), "r") as f:
         lines = f.readlines()
         top1 = round(float(lines[5].split(":")[1].split("%")[0].strip()), 2)
         top5 = round(float(lines[4].split(":")[1].split("%")[0].strip()), 2)
