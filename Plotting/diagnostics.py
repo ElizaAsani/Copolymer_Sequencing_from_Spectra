@@ -149,6 +149,6 @@ if __name__ == "__main__":
     plots_to_run = [args.only] if args.only else list(PLOTS)
     for name in plots_to_run:
         if name == "beam":
-            PLOTS[name](args.output_dir, alpha=args.alpha, th=args.th)
+            PLOTS[name](args.output_dir, alpha=args.alpha, threshold=args.th)
         else:
             PLOTS[name](args.output_dir)
