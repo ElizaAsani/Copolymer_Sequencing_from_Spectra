@@ -31,17 +31,17 @@ def plot_loss(output_dir):
     return
 
 def plot_errors(output_dir):
-    """Function to visualize number of errors in generated sequences.
+    """Function to visualize number of errors in predicted sequences.
     """ 
 
     error_df = pd.read_csv(os.path.join(output_dir, "errors", "errors.csv"))
     
-    # plot count of number of errors 
-    fig, axs = plt.subplots(1, 2, figsize=(12, 4))
+    # plot histogram of number of errors 
+    _, axs = plt.subplots(1, 2, figsize=(12, 4))
     error_idxs = error_df['num_errors'].value_counts().sort_index()
     axs[0].bar(error_idxs.index, error_idxs.values)
-    axs[0].set_title("Count of Number of Errors")
-    axs[0].set_xlabel("Number of Errors")
+    axs[0].set_title("Histogram of Number of Prediction Errors")
+    axs[0].set_xlabel("Number of Prediction Errors")
     axs[0].set_ylabel("Count")
 
     # plot avg number of errors vs. sequence length
