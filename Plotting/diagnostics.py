@@ -141,7 +141,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Plot diagnostic plots from training/validation.")
     parser.add_argument("output_dir", type=str, help="Path to a run's output directory")
     parser.add_argument("--only", type=str, choices=list(PLOTS), default=None, help="Type of plot to generate (default: all)")
-    parser.add_argument("--alpha", type=float, default=1, help="Alpha value for beam search plot (default: 1)")
+    parser.add_argument("--alpha", type=float, default=1.0, help="Alpha value for beam search plot (default: 1.0)")
     parser.add_argument("--th", type=float, default=1, help="Threshold value for beam search plot (default: 1)")
 
     args = parser.parse_args()
