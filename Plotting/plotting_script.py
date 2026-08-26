@@ -62,7 +62,7 @@ for _, folders in folders_by_noise.items():
     plot_subgroup_distances(folders, colors)
 
 ## ---- Figure 6, S7, S8---- ##
-mixtures_cfg = load_mix_config(os.path.join(mst_dir, "run_mixtures.yaml"))
+mixtures_cfg = load_mix_config(os.path.join(mst_dir, "configs", "run_mixtures.yaml"))
 mixtures_file_template = os.path.normpath(os.path.join(mst_dir, mixtures_cfg.mixtures_file_template))
 mixture_lambdas = mixtures_cfg.mixtures_lambdas
 
