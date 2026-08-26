@@ -59,7 +59,7 @@ def plot_subgroup_distance(folder, color, subgroup_type='NMR', distance_type='ma
 
     # calculate subgroup distances
     error_df['distances'] = [subgroup_vector_distance(target, prediction, subgroup_type, distance_type) 
-                             for target, prediction in zip(error_df['target sequence'], error_df['predicted sequence'])]
+                             for target, prediction in zip(error_df['target_sequence'], error_df['predicted_sequence'])]
     distance_counts = error_df['distances'].value_counts().sort_index()
     max_dist = max(distance_counts.index)
 
@@ -72,8 +72,7 @@ def plot_subgroup_distance(folder, color, subgroup_type='NMR', distance_type='ma
     ax.set_xlabel(f'Subgroup Error')
     ax.set_ylabel('Frequency')
     ax.set_xticks(np.arange(max_dist + 1, step=(max_dist // 15) + 1))
-    #ax.set_ylim(0, 1.5*max(distance_counts.values))
-    ax.set_ylim(0, 10**4)
+    ax.set_ylim(2*10**-1, 10**4)
     plt.savefig(os.path.join(out_folder, f"{distance_type}_distance_distribution.svg"))
     plt.close()
 
