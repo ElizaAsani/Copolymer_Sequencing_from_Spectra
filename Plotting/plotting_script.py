@@ -53,9 +53,11 @@ mixtures_folders = {spectrum: os.path.join(models_root, models[spectrum], "NOISE
 plot_degeneracies(degeneracy_folders, colors)
 
 ## ---- Figure 4 ---- ##
-plot_sequence_reconstruction(folders_by_noise[noise_levels[0]], colors, alpha=alpha, degeneracy_folders=degeneracy_folders)
-plot_sequence_reconstruction(folders_by_noise[noise_levels[1]], colors, alpha=alpha)
-plot_sequence_reconstruction(folders_by_noise[noise_levels[2]], colors, alpha=alpha)
+for noise_level, folders in folders_by_noise.items():
+    if noise_level == "NOISE0":
+        plot_sequence_reconstruction(folders, colors, alpha=alpha, degeneracy_folders=degeneracy_folders)
+    else:
+        plot_sequence_reconstruction(folders, colors, alpha=alpha)
 
 ## ---- Figure 5, S6---- ##
 for _, folders in folders_by_noise.items():
