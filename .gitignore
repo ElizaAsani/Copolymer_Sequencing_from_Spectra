@@ -7,6 +7,7 @@ Data Generation/degeneracy/uv_vis
 *.csv
 *.h5
 *.sh
+*.svg
 
 # VS code
 .vscode/
