@@ -74,7 +74,7 @@ def calculate_mixture_stats(seqs, weights):
 
     f_D = 0
     L = 0
-    L_b = 0
+    L_block = 0
 
     for seq, weight in zip(seqs, weights):
         if len(seq) == 0:
@@ -84,9 +84,9 @@ def calculate_mixture_stats(seqs, weights):
         if weight > 0:
             f_D += calcFracD(seq) * weight
             L += len(seq) * weight
-            L_b += calcAvgBlockLength(seq) * weight
+            L_block += calcAvgBlockLength(seq) * weight
 
-    return round(f_D, 6), round(L, 6), round(L_b, 6)
+    return round(f_D, 6), round(L, 6), round(L_block, 6)
 
 def get_weights(scores):
     """Calculate weights based on scores."""
@@ -130,7 +130,7 @@ def process_mixture_results(mixture_folders, mixtures_file_template, lambdas):
         target_stats = targets_df.groupby("Mixture").apply(lambda x: calculate_mixture_stats(x["Sequence"], x["Ratio"]))
 
         # write stats to csv
-        METRICS = [(0, "f_D"), (1, "lengths"), (2, "block_lengths")]
+        METRICS = [(0, "f_D"), (1, "L"), (2, "L_block")]
 
         for metric_idx, filename in METRICS:
             df = pd.DataFrame({"Mixture": stats['All'].index})

@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 def read_mixtures_output(folder, mean=False):
 
     # read in predictions 
-    lengths_df = pd.read_csv(os.path.join(folder, 'lengths.csv'), index_col=0)
+    lengths_df = pd.read_csv(os.path.join(folder, 'L.csv'), index_col=0)
     f_D_df = pd.read_csv(os.path.join(folder, 'f_D.csv'), index_col=0)
-    block_lengths_df = pd.read_csv(os.path.join(folder, 'block_lengths.csv'), index_col=0)
+    block_lengths_df = pd.read_csv(os.path.join(folder, 'L_block.csv'), index_col=0)
     
     if mean:
         lengths_df = lengths_df.mean()
