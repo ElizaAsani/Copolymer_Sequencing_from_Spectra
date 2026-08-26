@@ -42,7 +42,7 @@ models = {"NMR": "nmr",
 
 noise_levels = ["NOISE0", "NOISE1", "NOISE2"]
 
-alpha = 1
+alpha = 1.0
 
 folders_by_noise = {noise_level: build_model_folders(models, models_root, noise_level) for noise_level in noise_levels}
 degeneracy_folders = {spectrum: os.path.join(degeneracy_root, models[spectrum]) for spectrum in ["NMR", "MS", "UV-Vis"]}
