@@ -2,8 +2,9 @@
 Multispectra-to-sequence Transformer/Output/
 Data Generation/all/
 Data Generation/degeneracy/ms/
-Data Generation/degeneracy/nmr
-Data Generation/degeneracy/uv_vis
+Data Generation/degeneracy/nmr/
+Data Generation/degeneracy/uv_vis/
+Plotting/examples/
 *.csv
 *.h5
 *.sh
