@@ -5,7 +5,6 @@ dependencies:
   - python=3.11
   - matplotlib
   - pandas
-  - anaconda::scikit-learn
   - h5py
   - conda-forge::pyyaml
   - pip
