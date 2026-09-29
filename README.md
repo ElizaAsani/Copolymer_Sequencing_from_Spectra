@@ -49,4 +49,4 @@ If you use this code or data, please cite the associated manuscript:
 
 **Testing the Limits of Transformer-Based Sequence Inference from Copolymer Spectra**
 
-Additional citation information will be provided following publication.
+The manuscript is available as a preprint on [ChemRxiv](https://chemrxiv.org/doi/full/10.26434/chemrxiv.15007559/v1). Additional citation information will be provided following publication.
