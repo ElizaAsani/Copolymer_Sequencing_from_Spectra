@@ -168,7 +168,7 @@ class MS:
               # ensure new masses are in range
               extra_masses = np.array([extra_mass for extra_mass in extra_masses if (extra_mass >= self.mass_range[0] and extra_mass <= self.mass_range[1])])
               # get new intensity as fraction of major peak intensity
-              extra_intensities = ((mass - extra_masses)/self.noise_width)*intensity
+              extra_intensities = (1 - (mass - extra_masses)/self.noise_width)*intensity
               extra_fragments.update(dict(zip(extra_masses, extra_intensities)))
 
           mass_spectrum.update(extra_fragments)
