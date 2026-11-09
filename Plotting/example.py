@@ -41,12 +41,7 @@ def plot_eigenvalue(eigenvectors, eigenvalues, sequence):
         ax = axs[i]
         x = np.arange(len(sequence))
         y = eigenvectors[:, i]
-        pos_idx = np.where(y >= 0)[0]
-        neg_idx = np.where(y < 0)[0]
-        if len(pos_idx) > 0:
-            ax.stem(x[pos_idx], y[pos_idx], linefmt=colors['UV-Vis'], markerfmt='^', basefmt=' ')
-        if len(neg_idx) > 0:    
-            ax.stem(x[neg_idx], y[neg_idx], linefmt=colors['UV-Vis'], markerfmt='v', basefmt=' ')
+        ax.stem(x, y, linefmt=colors['UV-Vis'], markerfmt='o', basefmt=' ')
         ax.axhline(0, color='grey', linewidth=0.5, linestyle='-')
         ax.set_xlabel('Monomer')
         ax.set_xticks(x)
