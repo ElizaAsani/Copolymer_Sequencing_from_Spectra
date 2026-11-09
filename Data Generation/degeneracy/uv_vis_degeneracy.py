@@ -78,7 +78,7 @@ def main():
                            lambda seqs, getDiscrete, out_file: threshold_match_degeneracy(seqs, getDiscrete, 
                                                                                           x_res=X_RES, intensity_res=INTENSITY_RES, 
                                                                                           out_file=out_file, device=device),
-                            OUT_FOLDER, 20, MAX_LENGTH, SEQUENCE_DIR)
+                            OUT_FOLDER, MIN_LENGTH, MAX_LENGTH, SEQUENCE_DIR)
 
     dataset_degeneracies(OUT_FOLDER, MIN_LENGTH, MAX_LENGTH, SEQUENCE_FILE)
 
