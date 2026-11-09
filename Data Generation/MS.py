@@ -23,10 +23,11 @@ class BarPlotParameters:
 @dataclass
 class MSNoiseParameters:
   """data class for mass spectrum noise parameters"""
-  dropout : float = 0.0     # dropout probability for each peak
-  extra_peaks : int = 0     # number of satellite peaks to generate around each peak
-  width : float = 182.0     # width of linear intensity decay for satellite peak relative to major peak [m/z]
-  weight : float = 1.0      # lower bound for reweighting each peak
+  dropout : float = 0.0             # dropout probability for each peak
+  extra_peaks : int = 0             # number of satellite peaks to generate around each peak
+  extra_peak_weight : float = 0.5   # weight of satellite peaks relative to major peak
+  width : float = 182.0             # width of linear intensity decay for satellite peak relative to major peak [m/z]
+  weight : float = 1.0              # lower bound for reweighting each peak
 
 @dataclass
 class Atom:
@@ -73,6 +74,7 @@ class MS:
 
         self.dropout = noise_params.dropout
         self.extra_peaks = noise_params.extra_peaks
+        self.extra_peak_weight = noise_params.extra_peak_weight
         self.noise_width = noise_params.width
         self.peak_weight = noise_params.weight
 
@@ -168,7 +170,7 @@ class MS:
               # ensure new masses are in range
               extra_masses = np.array([extra_mass for extra_mass in extra_masses if (extra_mass >= self.mass_range[0] and extra_mass <= self.mass_range[1])])
               # get new intensity as fraction of major peak intensity
-              extra_intensities = (1 - (mass - extra_masses)/self.noise_width)*intensity
+              extra_intensities = self.extra_peak_weight * (1 - (mass - extra_masses)/self.noise_width)*intensity
               extra_fragments.update(dict(zip(extra_masses, extra_intensities)))
 
           mass_spectrum.update(extra_fragments)

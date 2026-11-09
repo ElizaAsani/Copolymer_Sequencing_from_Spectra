@@ -188,6 +188,7 @@ def run_mixtures(cfg):
                 ms_ds.attrs['bin_width'] = ms_spectrum_generator.bin_width
                 ms_ds.attrs['dropout'] = ms_spectrum_generator.dropout
                 ms_ds.attrs['extra_peaks'] = ms_spectrum_generator.extra_peaks
+                ms_ds.attrs['extra_peak_weight'] = ms_spectrum_generator.extra_peak_weight
                 ms_ds.attrs['noise_width'] = ms_spectrum_generator.noise_width
                 ms_ds.attrs['peak_weight'] = ms_spectrum_generator.peak_weight
 

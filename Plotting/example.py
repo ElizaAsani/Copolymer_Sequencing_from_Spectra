@@ -144,6 +144,7 @@ def save_single_sequence_example(cfg, sequence, output_dir):
         f.write(f"Dropout: {ms_spectrum_generator.dropout}\n")
         f.write(f"Peak Weight: {ms_spectrum_generator.peak_weight}\n")
         f.write(f"Extra Peaks: {ms_spectrum_generator.extra_peaks}\n")
+        f.write(f"Extra Peak Weight: {ms_spectrum_generator.extra_peak_weight}\n")
         f.write(f"Noise Width: {ms_spectrum_generator.noise_width}\n\n")
 
         fragments = ms_spectrum_generator._getFragments(sequence)
