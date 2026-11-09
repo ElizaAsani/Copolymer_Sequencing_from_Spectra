@@ -160,9 +160,18 @@ def save_single_sequence_example(cfg, sequence, output_dir):
         for mass, intensity in mass_spectrum.items():
             f.write(f"{str(mass):<12}{np.round(intensity, 3):>12.3f}\n")
 
-    x = ms_spectrum_generator.x
-    y = ms_spectrum_generator.getSpectrum(sequence)
-    fig, ax = plt.subplots(figsize=(2, 2))
+        x = ms_spectrum_generator.x
+        y = ms_spectrum_generator._binSpectrum(mass_spectrum)
+    
+        f.write("\nBinned Spectrum:\n")
+        f.write(f"{'Mass':<12}{'Intensity':>12}\n")
+        f.write(f"{'-' * 12}{'-' * 12}\n")
+        for i in range(len(x)):
+            if y[i] > 0:
+                f.write(f"{str(x[i]):<12}{np.round(y[i], 3):>12.3f}\n")
+
+    y = y / max(y)
+    fig, ax = plt.subplots(figsize=(2,2))
     ax.bar(x, y, width=ms_spectrum_generator.bin_width, color=colors["MS"], label='Mass Spectrum')
     ax.set_xlabel('Mass [m/z]')
     ax.set_ylabel('Intensity')
