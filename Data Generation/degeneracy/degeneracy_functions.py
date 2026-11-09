@@ -130,9 +130,6 @@ def get_degeneracy_map(out_folder, min_length, max_length):
     for length in range(min_length, max_length + 1):
         degeneracy_file = os.path.join(out_folder, f'degeneracies_{length}.csv')
 
-        if not os.path.exists(degeneracy_file):
-            continue
-
         df = pd.read_csv(degeneracy_file)
         degeneracy_map.update(dict(zip(df['Sequence'], df['Degeneracy'])))
 
@@ -149,14 +146,15 @@ def dataset_degeneracies(out_folder, min_length, max_length, sequence_file):
     os.makedirs(dataset_folder, exist_ok=True)
 
     df = pd.read_csv(sequence_file, header=None, names=['Sequence', 'Lambda'])
-    df['Degeneracy'] = df['Sequence'].map(degeneracy_map).fillna(1).astype(int)
-
-    # degeneracies for entire dataset
-    df.to_csv(os.path.join(dataset_folder, 'dataset_degeneracies.csv'), index=False)
+    df['Degeneracy'] = df['Sequence'].map(degeneracy_map).astype(int)
 
     # stats for full dataset and for train, validate, and test sets
     train_idx, val_idx, test_idx = stratified_split_indices([len(seq) for seq in df['Sequence']]) # same as model
     splits = {'dataset': df, 'train': df.iloc[train_idx], 'validate': df.iloc[val_idx], 'test': df.iloc[test_idx]}
+
+    # degeneracies for full dataset and for each split
+    for name, split_df in splits.items():
+        split_df.to_csv(os.path.join(dataset_folder, f'{name}_degeneracies.csv'), index=False)
 
     summary_file = os.path.join(dataset_folder, 'dataset_degeneracies.txt')
     with open(summary_file, 'w') as f:
