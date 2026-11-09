@@ -88,13 +88,7 @@ class MS:
         mass_spectrum = self.generateMassSpectrum(seq)
 
         # bin the mass spectrum
-        intensities = np.zeros_like(self.x, dtype=float)
-        for m, inten in mass_spectrum.items():
-            if self.mass_range[0] <= m < self.mass_range[1]:
-                bin_index = int((m - self.mass_range[0]) / self.bin_width)
-                intensities[bin_index] += inten
-            else:
-                print(f"Mass {m} out of range {self.mass_range}, skipping.")
+        intensities = self._binSpectrum(mass_spectrum)
 
         # normalize to max intensity
         intensities = intensities / max(intensities)
@@ -117,6 +111,18 @@ class MS:
         mass_spectrum = dict(sorted(mass_spectrum.items()))
 
         return mass_spectrum
+
+    def _binSpectrum(self, mass_spectrum):
+        """Bins the mass spectrum into a histogram with specified bin width."""
+        intensities = np.zeros_like(self.x, dtype=float)
+        for m, inten in mass_spectrum.items():
+            if self.mass_range[0] <= m < self.mass_range[1]:
+                bin_index = int((m - self.mass_range[0]) / self.bin_width)
+                intensities[bin_index] += inten
+            else:
+                print(f"Mass {m} out of range {self.mass_range}, skipping.")
+
+        return intensities
     
     def _getFragments(self, sequence):
         """Generates Gaussian-distributed fragments centered at midpoint of sequence."""
