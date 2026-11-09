@@ -177,7 +177,7 @@ class MS:
 
         if self.dropout > 0:
             # randomly drop peaks
-            ms_keys = list(mass_spectrum.keys())[:-1]
+            ms_keys = list(sorted(mass_spectrum.keys()))[:-1]
             for mass in ms_keys:
                 drop = self.rngs['dropout'].uniform(0, 1) < self.dropout
                 if drop: del mass_spectrum[mass]
