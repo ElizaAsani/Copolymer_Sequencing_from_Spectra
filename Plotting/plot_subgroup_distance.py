@@ -73,6 +73,7 @@ def plot_subgroup_distance(folder, color, subgroup_type='NMR', distance_type='ma
     ax.set_ylabel('Frequency')
     ax.set_xticks(np.arange(max_dist + 1, step=(max_dist // 15) + 1))
     ax.set_ylim(2*10**-1, 10**4)
+    ax.set_yticks(10**0, 10**1, 10**2, 10**3, 10**4)
     plt.savefig(os.path.join(out_folder, f"{distance_type}_distance_distribution.svg"))
     plt.close()
 
