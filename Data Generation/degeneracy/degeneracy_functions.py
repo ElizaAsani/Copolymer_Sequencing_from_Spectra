@@ -166,8 +166,10 @@ def dataset_degeneracies(out_folder, min_length, max_length, sequence_file):
 
             degen_distr_df = counts.reset_index()
             degen_distr_df.columns = ['Degeneracy', 'Count']
-            expected_num_corr = (degen_distr_df['Count'] / degen_distr_df['Degeneracy']).sum()
-            expected_percent_corr = 100 * expected_num_corr / num_sequences
+
+            top_1_count, top_1_percent = expected_reconstruction_accuracy(degen_distr_df, k=1)
+            top_5_count, top_5_percent = expected_reconstruction_accuracy(degen_distr_df, k=5)
+            top_10_count, top_10_percent = expected_reconstruction_accuracy(degen_distr_df, k=10)
 
             split_df.to_csv(os.path.join(dataset_folder, f'{name}_degeneracies.csv'), index=False)
             degen_distr_df.to_csv(os.path.join(dataset_folder, f'{name}_degeneracy_distribution.csv'), index=False)
@@ -177,11 +179,25 @@ def dataset_degeneracies(out_folder, min_length, max_length, sequence_file):
             print(f"Total # Sequences: {num_sequences}", file=f)
             print(f"Total # Unique Spectra: {(split_df['Degeneracy'] == 1).sum()}", file=f)
             print(f"Largest Group: {split_df['Degeneracy'].max()}", file=f)
-            print(f"Expected # Correctly Reconstructed: {expected_num_corr:.2f}", file=f)
-            print(f"Expected % Correctly Reconstructed: {expected_percent_corr:.2f}%", file=f)
+            print(f"Expected # Correctly Reconstructed: {top_1_count:.2f} (top-1), {top_5_count:.2f} (top-5), {top_10_count:.2f} (top-10)", file=f)
+            print(f"Expected % Correctly Reconstructed: {top_1_percent:.2f}% (top-1), {top_5_percent:.2f}% (top-5), {top_10_percent:.2f}% (top-10)", file=f)
         print("----------------------------------", file=f)
 
     return
+
+def expected_reconstruction_accuracy(degeneracy_distr_df, k=1):
+    """Expected reconstruction accuracy for a given degeneracy distribution and 
+    number of predictions k. Assumes that the model randomly selects from the 
+    degenerate sequences."""
+
+    expected_num_corr = 0
+
+    for degeneracy, count in zip(degeneracy_distr_df['Degeneracy'], degeneracy_distr_df['Count']):
+        expected_num_corr += count * min(1, k / degeneracy)
+
+    expected_percent_corr = 100 * expected_num_corr / degeneracy_distr_df['Count'].sum()
+
+    return expected_num_corr, expected_percent_corr
 
 def degeneracy_aware_reconstruction(isIndistinguishable, model_out_folder):
     """
