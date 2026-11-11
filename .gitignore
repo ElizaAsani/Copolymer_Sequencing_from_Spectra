@@ -4,6 +4,8 @@ Data Generation/all/
 Data Generation/degeneracy/ms/
 Data Generation/degeneracy/nmr/
 Data Generation/degeneracy/uv_vis/
+Data Generation/degeneracy/uv_vis+ms/
+Data Generation/degeneracy/uv_vis+ms+nmr/
 Plotting/examples/
 *.csv
 *.h5
