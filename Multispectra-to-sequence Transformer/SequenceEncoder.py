@@ -17,20 +17,23 @@ class SeqDataset(Dataset):
     eos_token = special_tokens.index('EOS')
     pad_token = special_tokens.index('PAD')
     
-    def __init__(self, path, scale={'uv_vis': False, 'nmr': False, 'ms': False}, max_length=None, mixtures=False):
+    def __init__(self, path, scale={'uv_vis': False, 'nmr': False, 'ms': False}, max_length=None, mixtures=False, read_full=True):
         super().__init__()
 
         self.h5_path = path
         self.h5 = h5py.File(self.h5_path, 'r') 
         self.mixtures = mixtures
 
-        # SPECTRA #   -- not stored, read in as needed -- 
+        # SPECTRA #    
         self.scale = scale
         self.spectra_datasets = {}
         self.spectra_length = {}
 
         for key in self.scale:
-            self.spectra_datasets[key] = self.h5[key]
+            if read_full:   # read in entire dataset into memory (faster, but uses more RAM)
+                self.spectra_datasets[key] = self.h5[key][:]
+            else:           # read in dataset on-the-fly (slower, but uses less RAM)
+                self.spectra_datasets[key] = self.h5[key]
             self.spectra_length[key] = self.h5[key].attrs['points']
 
         # SEQUENCES #
