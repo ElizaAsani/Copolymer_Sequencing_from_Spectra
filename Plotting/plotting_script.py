@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from plot_reconstruction import plot_sequence_reconstruction
 from plot_degeneracies import plot_degeneracies
+from plot_errors import plot_errors
 from plot_subgroup_distance import plot_subgroup_distances
 
 from process_mixture_results import process_mixture_results
@@ -33,6 +34,7 @@ def build_model_folders(models, models_root, noise_level):
 
 models_root = os.path.join("../Multispectra-to-sequence Transformer", "Output")
 degeneracy_root = os.path.join("../Data Generation", "degeneracy")
+sequence_file = os.path.join("../Data Generation", "seq_3-20.csv")
 
 models = {"NMR": "nmr",
           "MS": "ms",
@@ -50,9 +52,8 @@ degeneracy_folders = {spectrum: os.path.join(degeneracy_root, models[spectrum]) 
 mixtures_folders = {spectrum: os.path.join(models_root, models[spectrum], "NOISE0", "mixtures_L10", f"alpha_{alpha}") 
                     for spectrum in ["NMR", "MS", "UV-Vis", "UV-Vis + MS + NMR"]}
 noisy_test_folders = {noise_level: build_model_folders(models, models_root, noise_level) for noise_level in noisy_tests} 
-                      
+                
 ## ---- Figure 3 ---- ##
-
 plot_degeneracies(degeneracy_folders, colors)
 
 ## ---- Figure 4 ---- ##
@@ -64,9 +65,11 @@ for noise_level, folders in folders_by_noise.items():
 
 ## ---- Figure 5, S6---- ##
 for _, folders in folders_by_noise.items():
+    plot_errors(folders, colors, sequence_file)
     plot_subgroup_distances(folders, colors)
 
 for _, folders in noisy_test_folders.items():
+    plot_errors(folders, colors, sequence_file)
     plot_subgroup_distances(folders, colors)
 
 ## ---- Figure 6, S7, S8---- ##
