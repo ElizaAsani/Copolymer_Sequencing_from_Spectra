@@ -46,6 +46,20 @@ class RunMixturesConfig:
     alpha: float
 
 @dataclass
+class RunNoisyTestConfig:
+    """Parameters for running inference on noisy test data using saved model."""
+    data_file: str
+    model_dir: str
+    output_dir: str # relative to model
+
+    # dictionary containing the spectra to include and whether to scale them (True/False)
+    scale: dict         
+
+    # Beam search parameters
+    beam_width: int
+    alpha: float
+
+@dataclass
 class ModelArchitecture:
     """Parameters for the model architecture"""
     spec_lengths: dict
@@ -83,6 +97,44 @@ def load_config(path: str) -> RunConfig:
 
         epochs=training["epochs"],
         batch_size=training["batch_size"],
+
+        beam_width=beam_search["beam_width"],
+        alpha=beam_search["alpha"]
+    )
+
+def load_mix_config(path: str) -> RunMixturesConfig:
+    """Load configuration from a YAML file and return a RunMixturesConfig object"""
+
+    raw = yaml.safe_load(Path(path).read_text())
+
+    io = raw["io"]
+    beam_search = raw["beam_search"]
+
+    return RunMixturesConfig(
+        mixtures_file_template=io["mixtures_file_template"],
+        mixtures_lambdas=io["mixtures_lambdas"],
+        output_dir=io["output_dir"],
+
+        scale=raw["scale"],
+
+        beam_width=beam_search["beam_width"],
+        alpha=beam_search["alpha"]
+    )
+
+def load_noisy_test_config(path: str) -> RunNoisyTestConfig:
+    """Load configuration from a YAML file and return a RunNoisyTestConfig object"""
+
+    raw = yaml.safe_load(Path(path).read_text())
+
+    io = raw["io"]
+    beam_search = raw["beam_search"]
+
+    return RunNoisyTestConfig(
+        data_file=io["data_file"],
+        model_dir=io["model_dir"],
+        output_dir=io["output_dir"],
+
+        scale=raw["scale"],
 
         beam_width=beam_search["beam_width"],
         alpha=beam_search["alpha"]
