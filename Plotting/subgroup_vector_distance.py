@@ -1,9 +1,31 @@
 import numpy as np
 
+def is_missing(seq):
+    """Check for None, NaN, or empty string in a sequence."""
+    if seq is None:
+        return True
+    if isinstance(seq, float) and np.isnan(seq):
+        return True
+    if isinstance(seq, str) and len(seq) == 0:
+        return True
+    return False
+
 def subgroup_vector_distance(seq1, seq2, subgroup_type, distance_type):
     """Calculate the k-mer distance between two sequences based on their invariances."""
-    v1 = np.array(calculateSubgroupVector(seq1, subgroup_type=subgroup_type))
-    v2 = np.array(calculateSubgroupVector(seq2, subgroup_type=subgroup_type))
+    m1, m2 = is_missing(seq1), is_missing(seq2)
+
+    if m1 and m2:
+        return 0  # Both sequences are missing, distance is 0
+    else:
+        v1 = None if m1 else np.array(calculateSubgroupVector(seq1, subgroup_type=subgroup_type))
+        v2 = None if m2 else np.array(calculateSubgroupVector(seq2, subgroup_type=subgroup_type))
+
+        # if one of the vectors is None, replace it with a zero vector of the same length as the other vector
+        if m1: 
+            v1 = np.zeros_like(v2)
+        elif m2:
+            v2 = np.zeros_like(v1)
+    
     if distance_type == 'euclidean':
         dist = euclidean_distance(v1, v2)
     elif distance_type == 'manhattan':
