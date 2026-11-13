@@ -45,7 +45,7 @@ def plot_subgroup_distances(folders, colors, subgroup_type='NMR', distance_type=
     legend_ax.legend(handles=handles, loc='center', frameon=False, ncol=2)
     legend_ax.axis('off')    
 
-    plt.savefig(os.path.join(folders['UV-Vis + MS + NMR'], "errors", f"{distance_type}_distance_distributions.svg"))
+    plt.savefig(os.path.join(folders['UV-Vis + MS + NMR'], "errors", f"{distance_type}_dist.svg"))
     plt.close()
 
     plot_legend(handles, colors.keys())
@@ -58,9 +58,9 @@ def plot_subgroup_distance(folder, color, subgroup_type='NMR', distance_type='ma
     error_df = pd.read_csv(os.path.join(out_folder, "errors.csv"))
 
     # calculate subgroup distances
-    error_df['distances'] = [subgroup_vector_distance(target, prediction, subgroup_type, distance_type) 
+    error_df['subgroup_distances'] = [subgroup_vector_distance(target, prediction, subgroup_type, distance_type) 
                              for target, prediction in zip(error_df['target_sequence'], error_df['predicted_sequence'])]
-    distance_counts = error_df['distances'].value_counts().sort_index()
+    distance_counts = error_df['subgroup_distances'].value_counts().sort_index()
     max_dist = max(distance_counts.index)
 
     # plot distribution of distances
@@ -73,8 +73,11 @@ def plot_subgroup_distance(folder, color, subgroup_type='NMR', distance_type='ma
     ax.set_ylabel('Frequency')
     ax.set_xticks(np.arange(max_dist + 1, step=(max_dist // 15) + 1))
     ax.set_ylim(2*10**-1, 10**4)
-    plt.savefig(os.path.join(out_folder, f"{distance_type}_distance_distribution.svg"))
+    plt.savefig(os.path.join(out_folder, f"{distance_type}_dist.svg"))
     plt.close()
+
+    error_df.to_csv(os.path.join(out_folder, f"{distance_type}_dist.csv"), index=False)
+    distance_counts.to_csv(os.path.join(out_folder, f"{distance_type}_dist_counts.csv"), index=True)
 
     return distance_counts
 
