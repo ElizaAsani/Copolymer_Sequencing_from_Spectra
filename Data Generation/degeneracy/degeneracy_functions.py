@@ -211,7 +211,7 @@ def degeneracy_aware_reconstruction(isIndistinguishable, model_out_folder):
     error_df = pd.read_csv(error_file)
 
     error_df['Degenerate'] = [isIndistinguishable(target, predicted) for target, predicted 
-                              in zip(error_df['target sequence'], error_df['predicted sequence'])]
+                              in zip(error_df['target_sequence'], error_df['predicted_sequence'])]
     error_df.to_csv(os.path.join(model_out_folder, 'degenerate_errors.csv'), index=False)
 
     # write mean

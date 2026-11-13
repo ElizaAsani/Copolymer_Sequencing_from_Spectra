@@ -50,8 +50,8 @@ output files:
    for that group).
 3. **`degeneracy_aware_reconstruction(isIndistinguishable, model_out_folder)`**
    Re-scores a trained model's actual prediction errors: reads
-   `{model_out_folder}/errors.csv` (must have `target sequence` /
-   `predicted sequence` columns), flags each mispredicted pair as `Degenerate`
+   `{model_out_folder}/errors.csv` (must have `target_sequence` /
+   `predicted_sequence` columns), flags each mispredicted pair as `Degenerate`
    if `isIndistinguishable(target, predicted)` is `True` — i.e. the model's
    "wrong" answer is nonetheless spectrally indistinguishable from the right
    one. Writes `{model_out_folder}/degenerate_errors.csv` (the original
