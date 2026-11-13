@@ -41,6 +41,7 @@ models = {"NMR": "nmr",
           "UV-Vis + MS + NMR": "multispectra/all/"}
 
 noise_levels = ["NOISE0", "NOISE1", "NOISE2"]
+noisy_tests = ["NOISE0/NOISE1", "NOISE0/NOISE2", "NOISE1/NOISE2"]
 
 alpha = 1.0
 
@@ -48,8 +49,10 @@ folders_by_noise = {noise_level: build_model_folders(models, models_root, noise_
 degeneracy_folders = {spectrum: os.path.join(degeneracy_root, models[spectrum]) for spectrum in ["NMR", "MS", "UV-Vis"]}
 mixtures_folders = {spectrum: os.path.join(models_root, models[spectrum], "NOISE0", "mixtures_L10", f"alpha_{alpha}") 
                     for spectrum in ["NMR", "MS", "UV-Vis", "UV-Vis + MS + NMR"]}
-
+noisy_test_folders = {noise_level: build_model_folders(models, models_root, noise_level) for noise_level in noisy_tests} 
+                      
 ## ---- Figure 3 ---- ##
+
 plot_degeneracies(degeneracy_folders, colors)
 
 ## ---- Figure 4 ---- ##
@@ -61,6 +64,9 @@ for noise_level, folders in folders_by_noise.items():
 
 ## ---- Figure 5, S6---- ##
 for _, folders in folders_by_noise.items():
+    plot_subgroup_distances(folders, colors)
+
+for _, folders in noisy_test_folders.items():
     plot_subgroup_distances(folders, colors)
 
 ## ---- Figure 6, S7, S8---- ##
