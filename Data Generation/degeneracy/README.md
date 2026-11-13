@@ -37,19 +37,15 @@ output files:
    Looks up every sequence in the *actual* dataset (`sequence_file` — e.g.
    `seq_3-20.csv`) against the exhaustive reference computed in step 1 (via
    `get_degeneracy_map`, which merges all the per-length files into one
-   `{sequence: degeneracy}` map). A dataset sequence not found in that map
-   defaults to `Degeneracy = 1` — this should only happen if `sequence_file`
-   contains a length outside `[min_length, max_length]`, or step 1 hasn't
-   been run for the full range yet.
-   Splits the dataset into train/validate/test using `stratified_split_indices`
+   `{sequence: degeneracy}` map). Splits the dataset into train/validate/test using `stratified_split_indices`
    from `Multispectra-to-sequence Transformer/SequenceEncoder.py` — the same
    split logic actual model training uses, so the reported degeneracy
    statistics apply to the same train/val/test sets the model sees. Writes,
    under `{out_folder}/dataset/`: per-split sequence+degeneracy CSVs,
    per-split degeneracy-distribution CSVs, and a `dataset_degeneracies.txt`
    summary — number of sequence, number of unique-spectra, and largest degenerate
-   group, and an *expected* reconstruction accuracy per split (weighted sum
-   of `1/degeneracy` across all sequences — the accuracy a model could
+   group, and top-k *expected* reconstruction accuracy per split (weighted sum
+   of `k/degeneracy` across all sequences — the accuracy a model could
    achieve even if every prediction within a degenerate group were "correct"
    for that group).
 3. **`degeneracy_aware_reconstruction(isIndistinguishable, model_out_folder)`**
@@ -64,6 +60,12 @@ output files:
    script`.
 
 Steps 1 & 2 need only be performed once over the copolymer space, and must be computed relative to the noise-free (NOISE0) spectra. Step 3 can be recomputed anytime a different subset of sequences is used, if different train/val/test split is used, or if the model is retrained. We compute `degeneracy_aware_reconstruction` for the a single model's predictions when trained on NOISE0 spectra.
+
+## Joint Degeneracy
+
+We include an additional script that approximates joint degeneracy over multiple spectral inputs as the minimum degeneracy for each sequence over the set of spectra.
+
+Here `all_lengths_degeneracy` reads in previously-computed degeneracies for each spectral modality to compute the joint degeneracies, and it produces the same files as in the single spectrum case. Once computed, the same `dataset_degeneracies` function can be called to compute the joint degeneracies and expected reconstruction for the dataset. We do not implement a `degeneracy_aware_reconstruction` function for the joint case.
 
 ## Cross-repo dependency
 
@@ -95,7 +97,8 @@ The expected locations of each cross-repo dependency are computed in the respect
 │   │   ├── degeneracy_functions.py
 │   │   ├── ms_degeneracy.py
 │   │   ├── nmr_degeneracy.py
-│   │   └── uv_vis_degeneracy.py
+│   │   ├── uv_vis_degeneracy.py
+│   │   └── joint_degeneracy.py
 │   ├── seq_3-20.csv                # copolymer sequence used in the dataset
 │   ├── MS.py                       # Mass spec simulator + parameter classes 
 │   ├── NMR.py                      # NMR simulator + parameter classes
