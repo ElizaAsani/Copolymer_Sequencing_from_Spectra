@@ -61,14 +61,12 @@ Two helper files are included:
 ```bash
 python diagnostics.py <output_dir>
 python diagnostics.py <output_dir> --only loss
-python diagnostics.py <output_dir> --only errors
 python diagnostics.py <output_dir> --only beam --alpha 1.0 --th 1
 ```
 
 Tools for plotting diagnostics for a single Transformer run's `output_dir` (independent of `plotting_script.py`). Uses plain matplotlib defaults, not `figure.mplstyle`, since these are for quick inspection rather than publication.
 
 - `loss` — train/validation loss curves from `loss_history.csv`
-- `errors` — histogram of reconstruction error counts, and average errors vs. sequence length, from `errors/errors.csv`
 - `beam` — beam search score distributions for a sample of individual sequences, from `beam_search/alpha_<alpha>/beam_search.csv`; `--th` defines an upper bound for the top beam score, i.e. if set to `--th 0.90`, will only plot beam score distributions for sequence predictions where the top score is less than 0.90, i.e. where there is uncertainty in the beam predictions.
 
 ## Example plots
