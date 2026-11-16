@@ -25,7 +25,7 @@ def plot_loss(output_dir):
     ax.set_title('Cross Entropy Loss')
     ax.legend()
 
-    plt.savefig(os.path.join(output_dir, "loss.png"))
+    plt.savefig(os.path.join(output_dir, "loss.svg"))
     plt.close()
 
     return
@@ -37,21 +37,14 @@ def plot_errors(output_dir):
     error_df = pd.read_csv(os.path.join(output_dir, "errors", "errors.csv"))
     
     # plot histogram of number of errors 
-    _, axs = plt.subplots(1, 2, figsize=(12, 4))
+    _, ax = plt.subplots(figsize=(7, 4))
     error_idxs = error_df['num_errors'].value_counts().sort_index()
-    axs[0].bar(error_idxs.index, error_idxs.values)
-    axs[0].set_title("Histogram of Number of Prediction Errors")
-    axs[0].set_xlabel("Number of Prediction Errors")
-    axs[0].set_ylabel("Count")
+    ax.bar(error_idxs.index, error_idxs.values)
+    ax.set_title("Frequency of Prediction Errors")
+    ax.set_xlabel("Number of Prediction Errors")
+    ax.set_ylabel("Count")
 
-    # plot avg number of errors vs. sequence length
-    avg_error = error_df[['sequence_length', 'num_errors']].groupby('sequence_length').mean()
-    axs[1].bar(avg_error.index, avg_error['num_errors'])
-    axs[1].set_title("Avg. Number of Errors vs. Sequence Length")
-    axs[1].set_xlabel("Sequence Length")
-    axs[1].set_ylabel("Average Number of Errors")
-
-    plt.savefig(os.path.join(output_dir, "errors", "errors.png"))
+    plt.savefig(os.path.join(output_dir, "errors", "errors.svg"))
     plt.close()
 
     return
@@ -126,7 +119,7 @@ def plot_beam_histogram(output_dir, alpha=1, threshold=1):
     
         i += 1
 
-    plt.savefig(os.path.join(beam_search_dir, f"beam_histogram_thresh_{threshold}.png"))
+    plt.savefig(os.path.join(beam_search_dir, f"beam_histogram_thresh_{threshold}.svg"))
     plt.close()
 
     return

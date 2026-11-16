@@ -23,10 +23,11 @@ class BarPlotParameters:
 @dataclass
 class MSNoiseParameters:
   """data class for mass spectrum noise parameters"""
-  dropout : float = 0.0     # dropout probability for each peak
-  extra_peaks : int = 0     # number of satellite peaks to generate around each peak
-  width : float = 182.0     # width of linear intensity decay for satellite peak relative to major peak [m/z]
-  weight : float = 1.0      # lower bound for reweighting each peak
+  dropout : float = 0.0             # dropout probability for each peak
+  extra_peaks : int = 0             # number of satellite peaks to generate around each peak
+  extra_peak_weight : float = 0.5   # weight of satellite peaks relative to major peak
+  width : float = 182.0             # width of linear intensity decay for satellite peak relative to major peak [m/z]
+  weight : float = 1.0              # lower bound for reweighting each peak
 
 @dataclass
 class Atom:
@@ -73,6 +74,7 @@ class MS:
 
         self.dropout = noise_params.dropout
         self.extra_peaks = noise_params.extra_peaks
+        self.extra_peak_weight = noise_params.extra_peak_weight
         self.noise_width = noise_params.width
         self.peak_weight = noise_params.weight
 
@@ -86,13 +88,7 @@ class MS:
         mass_spectrum = self.generateMassSpectrum(seq)
 
         # bin the mass spectrum
-        intensities = np.zeros_like(self.x, dtype=float)
-        for m, inten in mass_spectrum.items():
-            if self.mass_range[0] <= m < self.mass_range[1]:
-                bin_index = int((m - self.mass_range[0]) / self.bin_width)
-                intensities[bin_index] += inten
-            else:
-                print(f"Mass {m} out of range {self.mass_range}, skipping.")
+        intensities = self._binSpectrum(mass_spectrum)
 
         # normalize to max intensity
         intensities = intensities / max(intensities)
@@ -115,6 +111,18 @@ class MS:
         mass_spectrum = dict(sorted(mass_spectrum.items()))
 
         return mass_spectrum
+
+    def _binSpectrum(self, mass_spectrum):
+        """Bins the mass spectrum into a histogram with specified bin width."""
+        intensities = np.zeros_like(self.x, dtype=float)
+        for m, inten in mass_spectrum.items():
+            if self.mass_range[0] <= m < self.mass_range[1]:
+                bin_index = int((m - self.mass_range[0]) / self.bin_width)
+                intensities[bin_index] += inten
+            else:
+                print(f"Mass {m} out of range {self.mass_range}, skipping.")
+
+        return intensities
     
     def _getFragments(self, sequence):
         """Generates Gaussian-distributed fragments centered at midpoint of sequence."""
@@ -168,14 +176,14 @@ class MS:
               # ensure new masses are in range
               extra_masses = np.array([extra_mass for extra_mass in extra_masses if (extra_mass >= self.mass_range[0] and extra_mass <= self.mass_range[1])])
               # get new intensity as fraction of major peak intensity
-              extra_intensities = ((mass - extra_masses)/self.noise_width)*intensity
+              extra_intensities = self.extra_peak_weight * (1 - (mass - extra_masses)/self.noise_width)*intensity
               extra_fragments.update(dict(zip(extra_masses, extra_intensities)))
 
           mass_spectrum.update(extra_fragments)
 
         if self.dropout > 0:
             # randomly drop peaks
-            ms_keys = list(mass_spectrum.keys())[:-1]
+            ms_keys = list(sorted(mass_spectrum.keys()))[:-1]
             for mass in ms_keys:
                 drop = self.rngs['dropout'].uniform(0, 1) < self.dropout
                 if drop: del mass_spectrum[mass]

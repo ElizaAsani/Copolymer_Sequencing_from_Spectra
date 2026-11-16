@@ -13,17 +13,21 @@ from seq_config import load_config
 def parse_args():
     parser = argparse.ArgumentParser(description='Generate copolymer sequences.')
     parser.add_argument('--config', type=str, required=True, help='Path to the configuration file.')
+    parser.add_argument('--seed', type=int, default=42, help='Random seed for reproducibility.')
     return parser.parse_args()
 
-def run(cfg):
+def run(cfg, seed):
+    print(f"Running in {cfg.mode} mode with seed {seed}")
+    rng = random.Random(seed)
+
     if cfg.mode == "random":
-        run_random(cfg)
+        run_random(cfg, rng)
     elif cfg.mode == "all":
         run_all(cfg)
     elif cfg.mode == "mixtures":
-        run_mixtures(cfg)
+        run_mixtures(cfg, rng)
 
-def run_random(cfg):
+def run_random(cfg, rng):
     """mode: random - N unique sequences, lengths and lambda uniformly sampled"""
 
     sequences = set()
@@ -31,12 +35,12 @@ def run_random(cfg):
 
     while len(sequences) < cfg.num_sequences:
         # pick lambda from a uniform distr.
-        lamb = random.uniform(-1, 0.99)
+        lamb = rng.uniform(-1, 0.99)
         lamb = np.round(lamb, 2)  
 
         # pick sequence length 
-        length = random.randint(cfg.min_length, cfg.max_length)              
-        seq = generateMarkovSequence(cfg.monomers, cfg.f_D, lamb, length)
+        length = rng.randint(cfg.min_length, cfg.max_length)     
+        seq = generateMarkovSequence(cfg.monomers, cfg.f_D, lamb, length, rng)
         seq = canonicalizeSequence(seq)
 
         if seq not in sequences:
@@ -62,7 +66,7 @@ def run_all(cfg):
 
         # generate all sequences, canonicalize, and drop duplicates
         allSeq = generateAllSequences(cfg.monomers, length)
-        allSeq = list(set([canonicalizeSequence(seq) for seq in allSeq]))
+        allSeq = list(sorted(set([canonicalizeSequence(seq) for seq in allSeq])))
 
         # open and write to csv file
         with open(filename, 'w', newline='') as csvfile:
@@ -74,7 +78,7 @@ def run_all(cfg):
                 # write sequence and lambdato file
                 writer.writerow([seq, lamb])  
 
-def run_mixtures(cfg):
+def run_mixtures(cfg, rng):
     """mode: mixtures - N mixtures of sequences of lengths in range [min_length, max_length]
         for each provided lambda"""
 
@@ -98,17 +102,17 @@ def run_mixtures(cfg):
         
                 for _ in range(len(cfg.ratios)):
                     # pick sequence length 
-                    length = random.randint(cfg.min_length, cfg.max_length)
+                    length = rng.randint(cfg.min_length, cfg.max_length)
 
                     # generate sequence
-                    seq = generateMarkovSequence(cfg.monomers, cfg.f_D, lamb, length)
+                    seq = generateMarkovSequence(cfg.monomers, cfg.f_D, lamb, length, rng)
                     seq = canonicalizeSequence(seq)
                     seqs.append(seq)
                     
                 # write sequence to file
                 writer.writerow([seqs, cfg.ratios, lamb])   
         
-def generateMarkovSequence(monomers, f_D, lambd, length):
+def generateMarkovSequence(monomers, f_D, lambd, length, rng):
     """Generates a string representation of a polymer chain of given length
         with two monomers. The sequence is determined by lambd [-1, 1] 
         which describes the strength of sequence correlations in the chain: 
@@ -121,11 +125,11 @@ def generateMarkovSequence(monomers, f_D, lambd, length):
     p_DA = f_D * (1 - lambd)        # prob of donor following acceptor
     p_AD = (1 - f_D) * (1 - lambd)  # prob of acceptor following donont
 
-    sequence = random.choice(monomers)  # randomly choose first monomer
+    sequence = rng.choice(monomers)  # randomly choose first monomer
 
     # generate rest of sequence
     for i in range(0, length - 1):
-        prob = random.random()      # generate random number
+        prob = rng.random()      # generate random number
 
         # if current monomer is 'D', determine next monomer
         if sequence[i] == monomers[0]:
@@ -185,7 +189,7 @@ def calcLambda(sequence):
 def main():
     args = parse_args()
     cfg = load_config(args.config)
-    run(cfg)
+    run(cfg, args.seed)
 
 if __name__ == '__main__':
     main()

@@ -41,12 +41,7 @@ def plot_eigenvalue(eigenvectors, eigenvalues, sequence):
         ax = axs[i]
         x = np.arange(len(sequence))
         y = eigenvectors[:, i]
-        pos_idx = np.where(y >= 0)[0]
-        neg_idx = np.where(y < 0)[0]
-        if len(pos_idx) > 0:
-            ax.stem(x[pos_idx], y[pos_idx], linefmt=colors['UV-Vis'], markerfmt='^', basefmt=' ')
-        if len(neg_idx) > 0:    
-            ax.stem(x[neg_idx], y[neg_idx], linefmt=colors['UV-Vis'], markerfmt='v', basefmt=' ')
+        ax.stem(x, y, linefmt=colors['UV-Vis'], markerfmt='o', basefmt=' ')
         ax.axhline(0, color='grey', linewidth=0.5, linestyle='-')
         ax.set_xlabel('Monomer')
         ax.set_xticks(x)
@@ -149,6 +144,7 @@ def save_single_sequence_example(cfg, sequence, output_dir):
         f.write(f"Dropout: {ms_spectrum_generator.dropout}\n")
         f.write(f"Peak Weight: {ms_spectrum_generator.peak_weight}\n")
         f.write(f"Extra Peaks: {ms_spectrum_generator.extra_peaks}\n")
+        f.write(f"Extra Peak Weight: {ms_spectrum_generator.extra_peak_weight}\n")
         f.write(f"Noise Width: {ms_spectrum_generator.noise_width}\n\n")
 
         fragments = ms_spectrum_generator._getFragments(sequence)
@@ -164,9 +160,18 @@ def save_single_sequence_example(cfg, sequence, output_dir):
         for mass, intensity in mass_spectrum.items():
             f.write(f"{str(mass):<12}{np.round(intensity, 3):>12.3f}\n")
 
-    x = ms_spectrum_generator.x
-    y = ms_spectrum_generator.getSpectrum(sequence)
-    fig, ax = plt.subplots(figsize=(2, 2))
+        x = ms_spectrum_generator.x
+        y = ms_spectrum_generator._binSpectrum(mass_spectrum)
+    
+        f.write("\nBinned Spectrum:\n")
+        f.write(f"{'Mass':<12}{'Intensity':>12}\n")
+        f.write(f"{'-' * 12}{'-' * 12}\n")
+        for i in range(len(x)):
+            if y[i] > 0:
+                f.write(f"{str(x[i]):<12}{np.round(y[i], 3):>12.3f}\n")
+
+    y = y / max(y)
+    fig, ax = plt.subplots(figsize=(2,2))
     ax.bar(x, y, width=ms_spectrum_generator.bin_width, color=colors["MS"], label='Mass Spectrum')
     ax.set_xlabel('Mass [m/z]')
     ax.set_ylabel('Intensity')

@@ -10,10 +10,14 @@ Trains and evaluates the multispectra-to-sequence transformer.
 │   ├── run_mixtures.yaml
 │   ├── run_NOISE0.yaml
 │   ├── run_NOISE1.yaml     
-│   └── run_NOISE2.yaml
+│   ├── run_NOISE2.yaml 
+│   ├── run_NOISE0_test_NOISE1.yaml 
+│   ├── run_NOISE0_test_NOISE2.yaml 
+│   └── run_NOISE1_test_NOISE2.yaml
 ├── config.py                   # loads configs for run, run_mixtures; writes/loads model_config
 ├── run.py                      # trains and evaluates multispectra-to-sequence transformer 
 ├── run_mixtures.py             # beam search inference on mixtures
+├── run_noisy_test.py           # clean train, noisy inference
 ├── model.py                    # model architecture
 ├── train.py                    # training script
 ├── evaluate.py                 # accuracy metrics
@@ -27,11 +31,14 @@ Trains and evaluates the multispectra-to-sequence transformer.
 ```bash
 python run.py --config configs/run_NOISE0.yaml
 python run_mixtures.py --config configs/run_mixtures.yaml
+python run_noisy_test.py --config configs/run_NOISE0_test_NOISE1.yaml
 ```
 
 `run.py` trains (or loads a saved model, if `saved_model: true`), evaluates on a held-out test set with greedy decoding, and runs beam search — writing accuracy metrics, errors, and beam search results to `output_dir`.
 
 `run_mixtures.py` loads a model already trained via `run.py` (using its `output_dir`) and runs beam search inference on spectral mixtures data, one output file per sequence correlation (`lambda`) value.
+
+`run_noisy_test.py` loads a model already trained via `run.py` (using its `output_dir`) evaluates on a held-out test set of a different noise level with greedy decoding and beam search — writing accuracy metrics, errors, and beam search results to `model_dir/output_dir`.
 
 ## Data format
 
@@ -82,6 +89,17 @@ io:
 ```
 
 The model parameters for mixtures mode are read from `output_dir/model_config.yaml`, which is written for each trained model.
+
+`configs/run_NOISE0_test_NOISE1.yaml` includes the same `scale`/`beam_search` sections, plus:
+
+```yaml
+io:
+  data_file: ../Data Generation/multispectra_NOISE1.h5
+  model_dir: ./Output/multispectra/all/NOISE0 # must be a model_dir from a completed run.py run
+  output_dir: NOISE1   
+```
+
+The model parameters for noisy test mode are read from `model_dir/model_config.yaml`.
 
 ## Evaluation
 

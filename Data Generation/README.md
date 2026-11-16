@@ -78,6 +78,15 @@ the fraction of donor monomers, or the number of samples.
 the fraction of donor monomers, the sequence correlations (`lambdas`), the number of sequences per mixture
 and their ratios (`ratios`), and the number of mixtures.
 
+### Changing the seed
+
+Random and mixtures modes can optionally take in an integer seed, where the default seed is 42. To use, add the seed as an additional argument:
+
+```bash
+python seq_generator.py --config configs/seq/random.yaml --seed 12
+python seq_generator.py --config configs/seq/mixtures.yaml --seed 24
+```
+
 ## Spectra generation
 
 ### Spectra generation usage

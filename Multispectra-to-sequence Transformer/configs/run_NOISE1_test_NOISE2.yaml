@@ -1,0 +1,17 @@
+# =====================================================================
+# Evaluation of NOISE0 Model on NOISE2 Data
+# =====================================================================
+
+io:
+  data_file: ../Data Generation/multispectra_NOISE2.h5
+  model_dir: ./Output/multispectra/all/NOISE1
+  output_dir: NOISE2
+
+scale:
+  uv_vis: true
+  nmr: false
+  ms: false
+
+beam_search:
+  beam_width: 10
+  alpha: 1.0

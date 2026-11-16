@@ -1,13 +1,15 @@
-name: PolymerSeq
+name: PolymerEnv
 channels:
   - defaults
+  - conda-forge
 dependencies:
-  - python=3.11
-  - matplotlib
-  - pandas
-  - h5py
-  - conda-forge::pyyaml
-  - pip
+  - h5py=3.16.0
+  - hdf5=2.0.0
+  - matplotlib=3.11.2
+  - numpy=2.4.6
+  - pandas=3.1.0
+  - python=3.11.18
+  - yaml=0.2.5
   - pip:
       - torch==2.6.0+cu118
       - --extra-index-url https://download.pytorch.org/whl/cu118

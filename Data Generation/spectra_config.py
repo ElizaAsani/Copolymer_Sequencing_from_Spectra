@@ -123,6 +123,7 @@ def load_config(path: str) -> SpectraConfig:
             cfg.ms_noise_params = MSNoiseParameters(
                 dropout = ms["noise"].get("dropout", MSNoiseParameters.dropout),
                 extra_peaks = ms["noise"].get("extra_peaks", MSNoiseParameters.extra_peaks),
+                extra_peak_weight = ms["noise"].get("extra_peak_weight", MSNoiseParameters.extra_peak_weight),
                 width = ms["noise"].get("width", MSNoiseParameters.width),
                 weight = ms["noise"].get("weight", MSNoiseParameters.weight)
             )
