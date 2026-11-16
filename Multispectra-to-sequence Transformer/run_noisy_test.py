@@ -54,7 +54,8 @@ if not os.path.exists(out_path):
 data_file = os.path.normpath(os.path.join(script_dir, cfg.data_file))
 scale = cfg.scale
 
-dataset = SeqDataset(data_file, scale, max_model_length)
+dataset = SeqDataset(data_file, scale, model_cfg.seq_length)
+
 _, _, test_set = make_splits(dataset)
 batch_size = 64 # hard-coded for now, can be changed later
 test_dl = DataLoader(test_set, batch_size=4*batch_size)
