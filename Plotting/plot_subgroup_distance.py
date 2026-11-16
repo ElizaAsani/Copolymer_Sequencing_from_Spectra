@@ -15,7 +15,7 @@ def plot_subgroup_distances(folders, colors, subgroup_type='NMR', distance_type=
 
     # get counts for distance zero
     total = sum(distance_counts['NMR'].values)
-    zero_distance_counts = {spectrum: distance_count.get(0) / total * 100 for spectrum, distance_count in distance_counts.items()}
+    zero_distance_counts = {spectrum: distance_count.get(0, 0) / total * 100 for spectrum, distance_count in distance_counts.items()}
 
     # get largest distance
     max_distance = {spectrum: distance_count.index[-1] for spectrum, distance_count in distance_counts.items()}
