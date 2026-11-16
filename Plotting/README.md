@@ -7,19 +7,21 @@ Generates the diagnostic and publication figures for the copolymer sequencing pr
 ```text
 .
 ├── figure.mplstyle              # matplotlib style for paper figures 
-├── plotting_script.py           # entry point: generates all paper figures
+├── plotting_script.py           # entry point: generates most paper figures
 ├── plot_degeneracies.py         # Figure 3
 ├── plot_reconstruction.py       # Figure 4
-├── plot_subgroup_distance.py    # Figure 5, S6
+├── plot_errors.py               # Figure S8, S9, S10
+├── plot_subgroup_distance.py    # Figure 5, S11
 ├── subgroup_vector_distance.py  # k-mer/fragment distance helper for plot_subgroup_distance.py
 ├── process_mixture_results.py   # merges per-spectrum mixtures beam search results, computes mixture stats
-├── plot_mixtures.py             # Figure 6, S7, S8
-├── diagnostics.py               # standalone diagnostic plots (loss curves, error counts, beam histograms)
-├── example.py                   # standalone example plots for single-sequence spectra
+├── plot_mixtures.py             # Figure 6, S12, S13
+├── diagnostics.py               # standalone diagnostic plots (loss curves, beam histograms)
+├── dataset_statistics.py        # Figure S1, S2
+├── example.py                   # Figure S3, S4, S5, S6; standalone example plots for single-sequence spectra
 └── example_mixture.py           # standalone example plots for mixture spectra
 ```
 
-## Paper figures
+## Paper results
 
 ```bash
 python plotting_script.py
@@ -81,3 +83,11 @@ Tools for plotting example spectra for either single sequences or mixtures.
 For single sequences, use `example.py`, which reads in a config file (must contain configs for all spectra), generates UV-Vis, NMR, and mass spectra for the given sequence, and saves to the output directory within `./examples/`.
 
 For mixtures, use `example_mixture.py`, which reads in a config file and generates UV-Vis, NMR, and mass spectra for `n` mixtures per lambda specified in the config. The mixtures are read from an already-generated `mixtures_lamb{lambda}` file in `Data Generation`. The examples are stored in a directory for each lambda, under the output directory within `./examples/`.
+
+## Dataset statistics
+
+```bash
+python dataset_statistics.py --sequence_file <seq_3-20.csv>
+```
+
+Tools for plotting distributions of lengths and sequence correlations in a dataset. Takes in a sequence filename, which should be located in `Data Generation`.
